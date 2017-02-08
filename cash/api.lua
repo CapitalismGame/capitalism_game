@@ -1,5 +1,5 @@
 cash = {
-	_denoms
+	_denoms = {}
 }
 
 -- Register a cash thing
@@ -7,7 +7,7 @@ function cash.register(name, def)
 	assert(def.groups and def.groups.money > 0)
 	def.name = name
 	table.insert(cash._denoms, def)
-	return minetest.register_craftitem(name, def)
+	return minetest and minetest.register_craftitem(name, def)
 end
 
 -- Work out the change that should be given
@@ -16,6 +16,8 @@ end
 -- @param available A key-value dictionary of available currency
 -- @return An array of ItemStacks or nil
 function cash.get_change(amount, available)
+	amount = amount * 100
+	assert(math.floor(amount) == amount, "Impossible currency (too many decimals)")
 	if amount == 0 then
 		return {}
 	end
