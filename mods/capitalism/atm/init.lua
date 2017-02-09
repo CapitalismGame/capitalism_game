@@ -1,6 +1,14 @@
 minetest.register_node("atm:atm", {
 	description = "ATM",
-	tiles = "default_cobble.png",
+	tiles = {
+		"atm_atm_sides.png",
+		"atm_atm_sides.png",
+		"atm_atm_sides.png",
+		"atm_atm_sides.png",
+		"atm_atm_sides.png",
+		"atm_atm_front.png",
+	},
+	paramtype2 = "facedir",
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
 		local placername = placer:get_player_name()
 		local companyname = companies.get_current_company(placername)
