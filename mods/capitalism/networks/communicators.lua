@@ -4,7 +4,6 @@ end
 
 minetest.register_node("networks:wireless", {
 	description = "Wireless Network Communicator",
-	tiles = "default_stone.png",
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
 		local placername = placer:get_player_name()
 		local companyname = companies.get_current_company(placername)
@@ -29,4 +28,27 @@ minetest.register_node("networks:wireless", {
 		local def = networks.get_coms(pos)
 		table.insert(def.receivers, copy_pos(connector_pos))
 	end,
+	tiles = {
+		"default_stone.png",
+	},
+	drawtype = "nodebox",
+	paramtype = "light",
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-0.1875, -0.5, -0.1875, 0.1875, -0.375, 0.1875}, -- Base
+			{-0.125, -0.375, -0.125, 0.125, 0, 0.125}, -- Pole
+			{-0.3125, 0, -0.3125, 0.3125, 0.125, 0.3125}, -- Dish
+			{-0.125, 0.125, -0.125, 0.125, 0.3125, 0.125}, -- NodeBox4
+			{-0.0625, 0.3125, -0.0625, 0.0625, 0.5, 0.0625}, -- NodeBox5
+			{-0.375, 0, -0.25, -0.3125, 0.125, 0.25}, -- NodeBox7
+			{-0.25, 0, -0.375, 0.25, 0.125, -0.3125}, -- NodeBox8
+			{0.3125, 0, -0.25, 0.375, 0.125, 0.25}, -- NodeBox10
+			{-0.25, 0, 0.3125, 0.25, 0.125, 0.375}, -- NodeBox11
+			{-0.125, 0, 0.375, 0.125, 0.125, 0.4375}, -- NodeBox12
+			{-0.4375, 0, -0.125, -0.375, 0.125, 0.125}, -- NodeBox13
+			{0.375, 0, -0.125, 0.4375, 0.125, 0.125}, -- NodeBox14
+			{-0.125, 0, -0.4375, 0.125, 0.125, -0.375}, -- NodeBox15
+		}
+	},
 })
