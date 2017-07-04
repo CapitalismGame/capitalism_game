@@ -24,7 +24,7 @@ minetest.register_node("networks:wireless", {
 		local def = networks.get_coms(pos)
 		table.insert(def.senders, copy_pos(connector_pos))
 	end,
-	on_receiver_connected = function(pos, connector_pos)
+	on_listener_connected = function(pos, connector_pos)
 		local def = networks.get_coms(pos)
 		table.insert(def.receivers, copy_pos(connector_pos))
 	end,

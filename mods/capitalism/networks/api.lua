@@ -61,7 +61,7 @@ function networks.do_connect(pos, compos, companyname, as)
 		assert(def["on_" .. as .. "_connected"], "unsupported type " .. as)
 		def["on_" .. as .. "_connected"](compos, pos)
 	else
-		def.on_receiver_connected(compos, pos)
+		def.on_listener_connected(compos, pos)
 		def.on_sender_connected(compos, pos)
 	end
 	networks.save()
@@ -74,4 +74,11 @@ function networks.find_near_and_connect(pos, companyname, as, radius)
 		return res
 	end
 	return nil
+end
+
+function networks.transmit(pos, msg)
+	local listeners = networks.get_listeners_of(pos)
+	for _, l in ipair(listeners) do
+		l:on_msg(pos, msg)
+	end
 end
