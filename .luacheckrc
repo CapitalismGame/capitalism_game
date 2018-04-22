@@ -10,7 +10,7 @@ globals = {
 read_globals = {
     string = {fields = {"split"}},
     table = {fields = {"copy", "getn"}},
-	assert = {fields = {"equals", "is_nil", "is_true", "is_false"}},
+	assert = {fields = {"equals", "is_nil", "is_true", "is_false", "is_not_nil", "not_equals"}},
 
     -- Builtin
     "vector", "ItemStack",
@@ -20,5 +20,5 @@ read_globals = {
     "default", "sfinv", "creative",
 
 	-- Libs
-	"ChatCmdBuilder", "describe", "it",
+	"ChatCmdBuilder", "describe", "it", "awards",
 }
