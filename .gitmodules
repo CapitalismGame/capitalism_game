@@ -1,0 +1,3 @@
+[submodule "mods/libs/lib_chatcmdbuilder"]
+	path = mods/libs/lib_chatcmdbuilder
+	url = https://github.com/rubenwardy/ChatCmdBuilder

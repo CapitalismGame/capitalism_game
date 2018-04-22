@@ -11,9 +11,8 @@ minetest.register_node("atm:atm", {
 	paramtype2 = "facedir",
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
 		local placername = placer:get_player_name()
-		local companyname = companies.get_current_company(placername)
+		local companyname = company.get_active_company_or_msg(placername)
 		if not companyname then
-			companies.show_select_company_message(placername)
 			minetest.set_node(pos, { name = "air" })
 			return true
 		end
@@ -34,10 +33,10 @@ minetest.register_node("atm:atm", {
 	groups = {choppy = 3, dig_immediate = 2},
 	on_sender_connected = function(pos, connector_pos)
 		local def = networks.get_coms(pos)
-		table.insert(def.senders, copy_pos(connector_pos))
+		table.insert(def.senders, vector.new(connector_pos))
 	end,
 	on_receiver_connected = function(pos, connector_pos)
 		local def = networks.get_coms(pos)
-		table.insert(def.receivers, copy_pos(connector_pos))
+		table.insert(def.receivers, vector.new(connector_pos))
 	end,
 })
