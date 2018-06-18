@@ -76,3 +76,6 @@ sfinv.register_page("company:company", {
 		company.show_company_select_dialog(player:get_player_name())
 	end,
 })
+
+table.insert(sfinv.pages_unordered, 1, sfinv.pages["company:company"])
+table.remove(sfinv.pages_unordered, #sfinv.pages_unordered)
