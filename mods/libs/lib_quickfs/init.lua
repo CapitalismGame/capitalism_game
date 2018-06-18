@@ -9,8 +9,6 @@ function lib_quickfs.register(name, func, cb)
 			local context = player_contexts[playername]
 			if context then
 				return cb(context, player, formname, fields)
-			else
-				minetest.log("warning", "Form " .. name .. " submitted by " .. playername .. ", but no context for player")
 			end
 		end
 	end)
@@ -22,8 +20,6 @@ function lib_quickfs.register(name, func, cb)
 		}
 		player_contexts[playername] = context
 		local formspec = func(context, playername, ...)
-		minetest.chat_send_player(playername, name .. ": " .. formspec)
-
 		minetest.show_formspec(playername, name, formspec)
 	end
 end

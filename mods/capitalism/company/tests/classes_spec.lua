@@ -1,12 +1,12 @@
-package.path = '../../?.lua;' .. -- tests root
-			   '../?.lua;' .. -- mod root
+package.path = 'mods/?.lua;' ..
 				package.path
 
 _G.company = {}
 
-require("company/company")
+require("capitalism/company/company")
+
 local Company = company.Company
-describe("Company", function()
+describe("company.Company", function()
 	it("constructs", function()
 		local company = Company:new()
 		assert.equals(company.balance, 0)
@@ -27,12 +27,12 @@ describe("Company", function()
 	it("has permissons", function()
 		local company = Company:new()
 		company.owner = "foobar"
-		assert.is_true (company:check_user_permission("foobar", "anything"))
-		assert.is_false(company:check_user_permission("sdsddd", "anything"))
+		assert.is_true (company:check_perm("foobar", "anything"))
+		assert.is_false(company:check_perm("sdsddd", "anything"))
 	end)
 
-    it("has balance", function()
-        local company = Company:new()
-        assert.equals(company:get_balance(), 0)
-    end)
+	it("has balance", function()
+		local company = Company:new()
+		assert.equals(company:get_balance(), 0)
+	end)
 end)

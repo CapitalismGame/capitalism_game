@@ -1,3 +1,4 @@
+sfinv
 lib_utils
 lib_chatcmdbuilder
 lib_underscore

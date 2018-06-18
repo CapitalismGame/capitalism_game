@@ -43,7 +43,11 @@ function Company:get_ownership(username)
 	end
 end
 
-function Company:check_user_permission(username, permisson)
+function Company:can_become_active(username)
+	return self:check_perm(username, "SWITCH_TO")
+end
+
+function Company:check_perm(username, permisson)
 	-- TODO: permissions
 	return self:get_ownership(username) > 0
 end

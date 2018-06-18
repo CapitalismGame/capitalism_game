@@ -4,7 +4,7 @@ allow_defined_top = true
 exclude_files = {"mods/mtg", "mods/libs/lib_chatcmdbuilder"}
 
 globals = {
-    "minetest",
+    "minetest", "company",
 }
 
 read_globals = {
@@ -21,4 +21,6 @@ read_globals = {
 
 	-- Libs
 	"ChatCmdBuilder", "describe", "it", "awards",
+
+    "_", "lib_utils", "lib_quickfs",
 }

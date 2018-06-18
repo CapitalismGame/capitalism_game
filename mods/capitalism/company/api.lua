@@ -22,12 +22,14 @@ function company.register_company(name, obj)
 end
 
 function company.set_active_company(playername, comp)
-	if type(comp) ~= "string" then
-		comp = comp.name
+	local cname = comp
+	if type(cname) ~= "string" then
+		cname = comp.name
 	end
 
-	if company.get_by_name(comp) then
-		company._active_companies[playername] = comp:lower()
+	comp = company.get_by_name(cname)
+	if comp and comp:can_become_active(playername) then
+		company._active_companies[playername] = cname:lower()
 		return true
 	else
 		return false
@@ -50,7 +52,19 @@ function company.get_active_company_or_msg(playername)
 	end
 end
 
-local storage = minetest.get_mod_storage()
-lib_utils.make_saveload(company, storage, "_companies", "register_company", company.Company)
+function company.get_companies_for_player(name)
+	local comps = {}
+	for _, comp in pairs(company._companies) do
+		if comp:can_become_active(name) then
+			comps[#comps + 1] = comp
+		end
+	end
+	return comps
+end
 
-company.load()
+-- Minetest won't be available in tests
+if minetest then
+	local storage = minetest.get_mod_storage()
+	lib_utils.make_saveload(company, storage, "_companies", "register_company", company.Company)
+	company.load()
+end
