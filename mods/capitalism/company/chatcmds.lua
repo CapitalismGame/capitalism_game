@@ -4,29 +4,31 @@ ChatCmdBuilder.new("company", function(cmd)
 			return true, "No companies registered."
 		else
 			return true, table.concat(_.map(company._companies, function(comp)
-				return " - " .. comp.name .. " by " .. comp:get_ceo_name()
+				return " - " .. comp.title .. " by " .. comp:get_ceo_name()
 			end), "\n")
 		end
 	end)
 
-	cmd:sub("register :cname", function(name, cname)
+	cmd:sub("register :title:text", function(name, title)
 		local comp = company.Company:new()
-		comp.name = cname
+		comp:set_title_calc_name(title)
 		comp.owner = name
 
-		if #cname < 3 then
+		if #title < 3 then
 			return false, "Company names must be at least 3 characters"
 		end
 
-		if cname:match("%W") then
-			return false, "Company names can only consist of letters and numbers"
+		local existing = company.get_by_name(comp.name)
+		if existing then
+			return false,
+				"Please choose a unique name, that was too similar to " .. existing.name
 		end
 
-		if company.register(cname, comp) then
+		if company.register(comp) then
 			company.save()
 			return true, "Registered company"
 		else
-			return false, "Unable to register company, a company of that name already exists"
+			return false, "Unable to register company, an unknown error occured"
 		end
 	end)
 

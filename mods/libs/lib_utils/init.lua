@@ -14,7 +14,7 @@ function lib_utils.make_saveload(tab, storage, itemarraykey, registername, class
 		_.each(table, function(v)
 			local obj = class:new()
 			assert(obj:from_table(v))
-			tab[registername](obj.name, obj)
+			assert(tab[registername](obj))
 		end)
 	end
 end

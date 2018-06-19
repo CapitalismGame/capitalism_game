@@ -12,6 +12,7 @@ end
 
 function Company:to_table()
 	return {
+		title   = self.title,
 		name    = self.name,
 		balance = self.balance,
 		owner   = self.owner
@@ -19,10 +20,16 @@ function Company:to_table()
 end
 
 function Company:from_table(t)
+	self.title   = t.title
 	self.name    = t.name
 	self.balance = t.balance
 	self.owner   = t.owner
 	return self.name ~= nil and self.balance ~= nil and self.owner ~= nil
+end
+
+function Company:set_title_calc_name(title)
+	self.title = title
+	self.name = title:lower():gsub("%W", "_")
 end
 
 function Company:get_balance()

@@ -18,7 +18,7 @@ company.show_company_select_dialog =
 				"textlist[-0.1,0.5;4,4;companies;",
 				table.concat(_.map(comps, function(comp)
 					if comp:get_ceo_name() == name then
-						return minetest.formspec_escape(comp.name)
+						return minetest.formspec_escape(comp.title)
 					else
 						return minetest.formspec_escape(minetest.colorize("#c0c0c0", comp.name))
 					end
@@ -60,7 +60,7 @@ sfinv.register_page("company:company", {
 		-- Using an array to build a formspec is considerably faster
 		local formspec = {
 			"label[0.1,0.0;",
-			minetest.formspec_escape(comp and comp.name or "No active company"),
+			minetest.formspec_escape(comp and comp.title or "No active company"),
 			"]",
 			"label[0.1,0.4;",
 			minetest.formspec_escape(comp and ("CEO: " .. comp:get_ceo_name()) or ""),

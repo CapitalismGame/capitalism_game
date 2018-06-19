@@ -8,14 +8,16 @@ function company.get_by_name(name)
 	return company._companies_by_name[name:lower()]
 end
 
-function company.register(name, obj)
-	name = name:lower()
-	if company._companies_by_name[name] then
+function company.register(obj)
+	if not obj.name or obj.name:match("[^a-z_]") then
+		print("/!\\ Company name is invalid: " .. obj.name)
+		return false
+	elseif company._companies_by_name[obj.name] then
+		print("/!\\ Company name is already registered")
 		return false
 	end
 
-	obj.name = name
-	company._companies_by_name[name] = obj
+	company._companies_by_name[obj.name] = obj
 	company._companies[#company._companies + 1] = obj
 
 	return true
