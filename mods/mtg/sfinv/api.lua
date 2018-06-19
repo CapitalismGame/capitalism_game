@@ -135,6 +135,16 @@ function sfinv.set_page(player, pagename)
 	sfinv.set_player_inventory_formspec(player, context)
 end
 
+function sfinv.set_page_and_show(player, pagename)
+	sfinv.set_page(player, pagename)
+	sfinv.show_formspec(player)
+end
+
+function sfinv.show_formspec(player)
+	local fs = sfinv.get_formspec(player, sfinv.get_or_create_context(player))
+	minetest.show_formspec(player:get_player_name(), "", fs)
+end
+
 minetest.register_on_joinplayer(function(player)
 	if sfinv.enabled then
 		sfinv.set_player_inventory_formspec(player)
@@ -165,7 +175,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 			local id = context.nav[tid]
 			local page = sfinv.pages[id]
 			if id and page then
-				sfinv.set_page(player, id)
+				sfinv.set_page_and_show(player, id)
 			end
 		end
 	else

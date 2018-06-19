@@ -47,9 +47,7 @@ company.show_company_select_dialog =
 			return
 		end
 
-		sfinv.set_page(player, "company:company")
-		local fs = sfinv.get_formspec(player, sfinv.get_or_create_context(player))
-		minetest.show_formspec(name, "", fs)
+		sfinv.set_page_and_show(player, "company:company")
 	end)
 
 sfinv.register_page("company:company", {
