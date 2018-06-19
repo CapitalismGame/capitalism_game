@@ -11,7 +11,7 @@ minetest.register_node("atm:atm", {
 	paramtype2 = "facedir",
 	after_place_node = function(pos, placer, itemstack, pointed_thing)
 		local placername = placer:get_player_name()
-		local companyname = company.get_active_company_or_msg(placername)
+		local companyname = company.get_active_or_msg(placername)
 		if not companyname then
 			minetest.set_node(pos, { name = "air" })
 			return true

@@ -30,7 +30,7 @@ function Company:get_balance()
 	return self.balance
 end
 
-function Company:get_primary_owner()
+function Company:get_ceo_name()
 	return self.owner
 end
 

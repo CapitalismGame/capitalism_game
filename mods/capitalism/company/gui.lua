@@ -17,7 +17,7 @@ company.show_company_select_dialog =
 				"label[0,-0.1;Select a Company]",
 				"textlist[-0.1,0.5;4,4;companies;",
 				table.concat(_.map(comps, function(comp)
-					if comp:get_primary_owner() == name then
+					if comp:get_ceo_name() == name then
 						return minetest.formspec_escape(comp.name)
 					else
 						return minetest.formspec_escape(minetest.colorize("#c0c0c0", comp.name))
@@ -42,8 +42,8 @@ company.show_company_select_dialog =
 		local name = player:get_player_name()
 		if fields.switch and context.comps then
 			local comp_name = context.comps[context.idx or 1]
-			company.set_active_company(name, comp_name)
-		elseif not fields.quit then
+			company.set_active(name, comp_name)
+		elseif not (fields.quit ~= "" or fields.back) then
 			return
 		end
 
@@ -55,7 +55,7 @@ company.show_company_select_dialog =
 sfinv.register_page("company:company", {
 	title = "Company",
 	get = function(self, player, context)
-		local comp = company.get_active_company(player:get_player_name())
+		local comp = company.get_active(player:get_player_name())
 
 		-- Using an array to build a formspec is considerably faster
 		local formspec = {
@@ -63,7 +63,7 @@ sfinv.register_page("company:company", {
 			minetest.formspec_escape(comp and comp.name or "No active company"),
 			"]",
 			"label[0.1,0.4;",
-			minetest.formspec_escape(comp and ("CEO: " .. comp:get_primary_owner()) or ""),
+			minetest.formspec_escape(comp and ("CEO: " .. comp:get_ceo_name()) or ""),
 			"]",
 			"button[6,0;2,1;switch;Switch]"
 		}
@@ -73,7 +73,9 @@ sfinv.register_page("company:company", {
 				table.concat(formspec, ""), false)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
-		company.show_company_select_dialog(player:get_player_name())
+		if fields.switch then
+			company.show_company_select_dialog(player:get_player_name())
+		end
 	end,
 })
 

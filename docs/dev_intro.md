@@ -15,7 +15,7 @@ A player can act on behalf of only one company at
 a time - this is their active company. The active company can be obtained using the following function:
 
 ```lua
-local comp = company.get_active_company(name)
+local comp = company.get_active(name)
 ```
 
 ### Actions and Permissions

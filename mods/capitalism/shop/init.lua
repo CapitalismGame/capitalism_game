@@ -13,7 +13,7 @@ minetest.register_node("shop:counter", {
 
 	after_place_node = function(pos, player)
 		local playername = player:get_player_name()
-		local comp = company.get_active_company_or_msg(playername)
+		local comp = company.get_active_or_msg(playername)
 		if comp then
 			local meta = minetest.get_meta(pos)
 			meta:set_string("infotest", "Unconfigured shop")

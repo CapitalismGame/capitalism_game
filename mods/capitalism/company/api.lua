@@ -8,7 +8,7 @@ function company.get_by_name(name)
 	return company._companies_by_name[name:lower()]
 end
 
-function company.register_company(name, obj)
+function company.register(name, obj)
 	name = name:lower()
 	if company._companies_by_name[name] then
 		return false
@@ -21,7 +21,7 @@ function company.register_company(name, obj)
 	return true
 end
 
-function company.set_active_company(playername, comp)
+function company.set_active(playername, comp)
 	local cname = comp
 	if type(cname) ~= "string" then
 		cname = comp.name
@@ -36,13 +36,13 @@ function company.set_active_company(playername, comp)
 	end
 end
 
-function company.get_active_company(playername)
+function company.get_active(playername)
 	local name = company._active_companies[playername]
 	return name and company.get_by_name(name) or nil
 end
 
-function company.get_active_company_or_msg(playername)
-	local comp = company.get_active_company(playername)
+function company.get_active_or_msg(playername)
+	local comp = company.get_active(playername)
 	if comp then
 		return comp
 	else
@@ -65,6 +65,6 @@ end
 -- Minetest won't be available in tests
 if minetest then
 	local storage = minetest.get_mod_storage()
-	lib_utils.make_saveload(company, storage, "_companies", "register_company", company.Company)
+	lib_utils.make_saveload(company, storage, "_companies", "register", company.Company)
 	company.load()
 end

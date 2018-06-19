@@ -69,7 +69,7 @@ end
 
 shop.show_shop_checkout_form = lib_quickfs.register("shop:counter", function(self, playername, pos, meta)
 		local owner_company = meta:get_string("owner_company")
-		local comp = company.get_active_company(playername)
+		local comp = company.get_active(playername)
 		self.pos = pos
 		self.is_admin = comp and comp.name == owner_company or false
 
@@ -91,7 +91,7 @@ shop.show_shop_checkout_form = lib_quickfs.register("shop:counter", function(sel
 
 shop.show_shop_config_form = lib_quickfs.register("shop:counter_setup", function(self, playername, pos, meta)
 		local owner_company = meta:get_string("owner_company")
-		local comp = company.get_active_company(playername)
+		local comp = company.get_active(playername)
 		if comp and comp.name == owner_company then
 			self.pos = pos
 			return [[

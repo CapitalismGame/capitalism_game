@@ -4,7 +4,7 @@ ChatCmdBuilder.new("company", function(cmd)
 			return true, "No companies registered."
 		else
 			return true, table.concat(_.map(company._companies, function(comp)
-				return " - " .. comp.name .. " by " .. comp:get_primary_owner()
+				return " - " .. comp.name .. " by " .. comp:get_ceo_name()
 			end), "\n")
 		end
 	end)
@@ -22,7 +22,7 @@ ChatCmdBuilder.new("company", function(cmd)
 			return false, "Company names can only consist of letters and numbers"
 		end
 
-		if company.register_company(cname, comp) then
+		if company.register(cname, comp) then
 			company.save()
 			return true, "Registered company"
 		else
@@ -46,7 +46,7 @@ ChatCmdBuilder.new("company", function(cmd)
 	end)
 
 	cmd:sub("use :cname", function(name, cname)
-		if company.set_active_company(name, cname) then
+		if company.set_active(name, cname) then
 			return true, "You are now operating as " .. cname
 		else
 			return false, "No company by the name '" .. cname  .. "' found"
