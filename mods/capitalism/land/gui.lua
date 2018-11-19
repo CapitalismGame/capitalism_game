@@ -26,7 +26,7 @@ end
 
 land.show_debug_to = lib_quickfs.register("land:debug", function(self, playername)
 		local fs = {
-			"size[5,6.8]",
+			"size[7,6]",
 			"tablecolumns[color;tree;text,width=10;text]",
 			-- "tableoptions[background=#00000000;border=false]",
 			"table[0,0;4.8,6;list_areas;"
@@ -53,7 +53,15 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 			local p_lnd = area.parent and land.get_by_area_id(area.parent)
 
 			if lnd then
-				fs[#fs + 1] = "#69f,"
+				if lnd.type == "commercial" then
+					fs[#fs + 1] = "#69f,"
+				elseif lnd.type == "industrial" then
+					fs[#fs + 1] = "#f96,"
+				elseif lnd.type == "residential" then
+					fs[#fs + 1] = "#6f6,"
+				else
+					fs[#fs + 1] = "#000,"
+				end
 			elseif p_lnd then
 				fs[#fs + 1] = ","
 			else
@@ -75,13 +83,19 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 			local area = list[self.selected]
 
 			if land.get_by_area_id(area.id) then
-				fs[#fs + 1] = "button[0,6.2;1.25,1;unzone;Unzone]"
+				fs[#fs + 1] = "button[5,0;2,1;unzone;Unzone]"
+				fs[#fs + 1] = "box[5,1;1.8,0.8;#222]"
+				fs[#fs + 1] = "box[5,2;1.8,0.8;#222]"
+				fs[#fs + 1] = "box[5,4;1.8,0.8;#222]"
+				fs[#fs + 1] = "label[5.2,4.2;Owned by Govnt]"
 			else
-				fs[#fs + 1] = "button[0,6.2;1.25,1;to_zone;To Zone]"
-				fs[#fs + 1] = "button[1.25,6.2;1.25,1;transfer;Transfer]"
-				fs[#fs + 1] = "button[2.5,6.2;1.25,1;delete;Delete]"
-				fs[#fs + 1] = "button[3.75,6.2;1.25,1;;]"
+				fs[#fs + 1] = "button[5,0;2,1;to_comm;Commercial]"
+				fs[#fs + 1] = "button[5,1;2,1;to_inds;Industrial]"
+				fs[#fs + 1] = "button[5,2;2,1;to_resd;Residential]"
+				fs[#fs + 1] = "button[5,4;2,1;set_owner;Set Owner]"
 			end
+			fs[#fs + 1] = "box[5,3;1.8,0.8;#222]"
+			fs[#fs + 1] = "button[5,5;2,1;delete;Delete]"
 
 		else
 			fs[#fs + 1] = "label[0.1,6.1;No area selected]"
@@ -96,21 +110,27 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 			return true
 		end
 
-		if fields.to_zone and self.selected then
+		local function do_set(type)
 			local area = self.list[self.selected]
-			local suc, msg = land.create_zone(area.id, "commercial")
-			if suc then
-				self.selected = self.selected + 1
-			end
+			local suc, msg = land.create_zone(area.id, type)
 			if msg then
 				minetest.chat_send_player(player:get_player_name(), msg)
 			end
+
 			return true
 		end
 
-		if fields.unzone and self.selected then
-			local area = self.list[self.selected]
-			land.remove_zone(area.id)
-			return true
+		if self.selected then
+			if fields.to_comm then
+				return do_set("commercial")
+			elseif fields.to_inds then
+				return do_set("industrial")
+			elseif fields.to_resd then
+				return do_set("residential")
+			elseif fields.unzone then
+				local area = self.list[self.selected]
+				land.remove_zone(area.id)
+				return true
+			end
 		end
 	end)
