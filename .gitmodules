@@ -4,3 +4,6 @@
 [submodule "mods/crafting"]
 	path = mods/crafting
 	url = https://github.com/rubenwardy/crafting
+[submodule "mods/areas"]
+	path = mods/areas
+	url = https://github.com/rubenwardy/areas
