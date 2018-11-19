@@ -9,7 +9,7 @@ local function flatten_list(list, level, out)
 		local area = list[i]
 
 		local children = area.children
-		area.children = nil
+		-- area.children = nil
 		area.level = level
 		out[#out + 1] = area
 
@@ -53,11 +53,11 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 			local p_lnd = area.parent and land.get_by_area_id(area.parent)
 
 			if lnd then
-				if lnd.type == "commercial" then
+				if lnd.land_type == "commercial" then
 					fs[#fs + 1] = "#69f,"
-				elseif lnd.type == "industrial" then
+				elseif lnd.land_type == "industrial" then
 					fs[#fs + 1] = "#f96,"
-				elseif lnd.type == "residential" then
+				elseif lnd.land_type == "residential" then
 					fs[#fs + 1] = "#6f6,"
 				else
 					fs[#fs + 1] = "#000,"
@@ -82,23 +82,11 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 		if self.selected then
 			local area = list[self.selected]
 
-			if land.get_by_area_id(area.id) then
-				fs[#fs + 1] = "button[5,0;2,1;unzone;Unzone]"
-				fs[#fs + 1] = "box[5,1;1.8,0.8;#222]"
-				fs[#fs + 1] = "box[5,2;1.8,0.8;#222]"
-				fs[#fs + 1] = "box[5,4;1.8,0.8;#222]"
-				fs[#fs + 1] = "label[5.2,4.2;Owned by Govnt]"
-			elseif land.can_zone(area.id) then
-				fs[#fs + 1] = "button[5,0;2,1;to_comm;Commercial]"
-				fs[#fs + 1] = "button[5,1;2,1;to_inds;Industrial]"
-				fs[#fs + 1] = "button[5,2;2,1;to_resd;Residential]"
-				fs[#fs + 1] = "button[5,4;2,1;set_owner;Set Owner]"
-			else
-				fs[#fs + 1] = "box[5,0;1.8,0.8;#222]"
-				fs[#fs + 1] = "box[5,1;1.8,0.8;#222]"
-				fs[#fs + 1] = "box[5,2;1.8,0.8;#222]"
-				fs[#fs + 1] = "button[5,4;2,1;set_owner;Set Owner]"
-			end
+			-- fs[#fs + 1] = "box[5,1;1.8,0.8;#222]"
+			fs[#fs + 1] = "button[5,0;2,1;to_comm;Commercial]"
+			fs[#fs + 1] = "button[5,1;2,1;to_inds;Industrial]"
+			fs[#fs + 1] = "button[5,2;2,1;to_resd;Residential]"
+			fs[#fs + 1] = "button[5,4;2,1;set_owner;Set Owner]"
 			fs[#fs + 1] = "box[5,3;1.8,0.8;#222]"
 			fs[#fs + 1] = "button[5,5;2,1;delete;Delete]"
 
@@ -115,12 +103,18 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 			return true
 		end
 
-		local function do_set(type)
-			local area = self.list[self.selected]
-			local _, msg = land.create_zone(area.id, type)
-			if msg then
-				minetest.chat_send_player(player:get_player_name(), msg)
+		local function do_set_list(list, type)
+			for i=1, #list do
+				local id       = list[i].id
+				local area     = areas.areas[id]
+				area.land_type = type
+				do_set_list(list[i].children, type)
 			end
+		end
+
+		local function do_set(type)
+			do_set_list({ self.list[self.selected] }, type)
+			areas:save()
 
 			return true
 		end

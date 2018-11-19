@@ -13,40 +13,40 @@ ChatCmdBuilder.new("land", function(cmd)
 		return true, "Showed land debug form"
 	end)
 
-	cmd:sub("zone :id:int :type", function(name, id, type)
+	cmd:sub("set_type :id:int :type", function(name, id, type)
 		if not minetest.check_player_privs(name, { land_admin = true }) then
 			return false, "Missing privilege: land_admin"
 		end
 
-		if not areas.areas[id] then
+		if not land.valid_types[type] then
+			return false, "Invalid type " .. type
+		end
+
+		local area = areas.areas[id]
+		if not area then
 			return false, "Unable to find area id=" .. id
 		end
 
-		if land.create_zone(id, type) then
-			return true, "Marked area id=" .. id .. " as " .. type .. " zone"
-		else
-			return false, "Unexpected error"
-		end
+		area.land_type = type
+		areas:save()
+
+		return true, "Set type for area id=" .. id .. " to " .. type
 	end)
 
-	cmd:sub("unzone :id:int", function(name, id)
+	cmd:sub("remove_type :id:int", function(name, id)
 		if not minetest.check_player_privs(name, { land_admin = true }) then
 			return false, "Missing privilege: land_admin"
 		end
 
-		if not areas.areas[id] then
+		local area = areas.areas[id]
+		if not area then
 			return false, "Unable to find area id=" .. id
 		end
 
-		if not land._zone_by_id[id] then
-			return false, "Area id=" .. id .. " is not a zone"
-		end
+		area.land_type = nil
+		areas:save()
 
-		if land.remove_zone(id) then
-			return true, "Marked area id=" .. id .. " as " .. type .. " zone"
-		else
-			return false, "Unexpected error"
-		end
+		return true, "Removed type"
 	end)
 end, {
 	description = "Land tools",

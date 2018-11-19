@@ -1,2 +1,0 @@
-* Currency system
-* Credit
