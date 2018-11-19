@@ -43,7 +43,6 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 
 		for i=1, #list do
 			local area = list[i]
-			print(dump(area))
 
 			if i > 1 then
 				fs[#fs + 1] = ","
@@ -88,10 +87,15 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 				fs[#fs + 1] = "box[5,2;1.8,0.8;#222]"
 				fs[#fs + 1] = "box[5,4;1.8,0.8;#222]"
 				fs[#fs + 1] = "label[5.2,4.2;Owned by Govnt]"
-			else
+			elseif land.can_zone(area.id) then
 				fs[#fs + 1] = "button[5,0;2,1;to_comm;Commercial]"
 				fs[#fs + 1] = "button[5,1;2,1;to_inds;Industrial]"
 				fs[#fs + 1] = "button[5,2;2,1;to_resd;Residential]"
+				fs[#fs + 1] = "button[5,4;2,1;set_owner;Set Owner]"
+			else
+				fs[#fs + 1] = "box[5,0;1.8,0.8;#222]"
+				fs[#fs + 1] = "box[5,1;1.8,0.8;#222]"
+				fs[#fs + 1] = "box[5,2;1.8,0.8;#222]"
 				fs[#fs + 1] = "button[5,4;2,1;set_owner;Set Owner]"
 			end
 			fs[#fs + 1] = "box[5,3;1.8,0.8;#222]"

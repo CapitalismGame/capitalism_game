@@ -55,43 +55,51 @@ function land.get_by_area_id(id)
 	return land._zone_by_id[id]
 end
 
-function land.can_zone(id)
+function land.regen_can_zone_cache()
 	local tree, area_by_id = land.get_area_tree()
+	local cache = {}
+	land._can_zone_cache = cache
 
-	local function find_zone(list)
+	local function mark_all(list)
 		for i=1, #list do
-			if land._zone_by_id[list[i].id] then
-				return false
-			end
-
-			if not find_zone(list[i].children) then
-				return false
-			end
+			cache[list[i].id] = false
+			mark_all(list[i].children)
 		end
 
 		return true
 	end
 
+	for _, zone in pairs(land._zones) do
+		local area = area_by_id[zone.id]
+		assert(area)
 
-	local area = area_by_id[id]
-	assert(area)
+		cache[zone.id] = false
+		mark_all(area.children)
 
-	-- Check children
-	if not find_zone(area.children) then
-		return false
-	end
-
-	-- Check parents
-	local pointer = area_by_id[area.parent]
-	while pointer do
-		if land._zone_by_id[pointer.id] then
-			return false
+		local pointer = area_by_id[area.parent]
+		while pointer do
+			cache[pointer.id] = false
+			pointer = area_by_id[pointer.parent]
 		end
-
-		pointer = area_by_id[pointer.parent]
 	end
 
-	return true
+	assert(land._can_zone_cache)
+
+	return cache
+end
+
+function land.invalidate_can_zone_cache()
+	land._can_zone_cache = nil
+end
+
+function land.can_zone(id)
+	if not land._can_zone_cache then
+		land.regen_can_zone_cache()
+	end
+
+	assert(id ~= nil)
+
+	return land._can_zone_cache[id] ~= false
 end
 
 
@@ -108,6 +116,7 @@ function land.create_zone(id, type)
 	zone.type  = type
 	land.add_zone(zone)
 	land.save()
+	land.invalidate_can_zone_cache()
 	return zone
 end
 
@@ -120,6 +129,8 @@ function land.remove_zone(id)
 	end
 
 	land._zone_by_id[id] = nil
+	land.save()
+	land.invalidate_can_zone_cache()
 end
 
 function land.add_zone(z)
@@ -133,11 +144,11 @@ end
 
 
 areas:registerOnAdd(function(owner, name, pos1, pos2, parent)
-	-- print(dump({ owner, name, pos1, pos2, parent }))
+	land.invalidate_can_zone_cache()
 end)
 
 areas:registerOnRemove(function(id)
-	-- print(dump(id))
+	land.invalidate_can_zone_cache()
 end)
 
 areas:registerOnMove(function(id, area, pos1, pos2)
