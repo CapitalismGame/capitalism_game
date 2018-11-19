@@ -20,7 +20,8 @@ local function flatten_list(list, level, out)
 end
 
 local function build_list()
-	return flatten_list(land.get_area_tree())
+	local tree = land.get_area_tree()
+	return flatten_list(tree)
 end
 
 
@@ -137,4 +138,4 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 				return true
 			end
 		end
-	end)
+	end, { land_admin = true })
