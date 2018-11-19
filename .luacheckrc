@@ -1,10 +1,11 @@
 unused_args = false
 allow_defined_top = true
 
-exclude_files = {"mods/mtg", "mods/libs/lib_chatcmdbuilder"}
+exclude_files = {"mods/mtg", "mods/libs/lib_chatcmdbuilder", "mods/areas"}
 
 globals = {
     "minetest", "company",
+    "areas",
 }
 
 read_globals = {

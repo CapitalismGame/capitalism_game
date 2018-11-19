@@ -56,7 +56,7 @@ function land.get_by_area_id(id)
 end
 
 function land.regen_can_zone_cache()
-	local tree, area_by_id = land.get_area_tree()
+	local _, area_by_id = land.get_area_tree()
 	local cache = {}
 	land._can_zone_cache = cache
 

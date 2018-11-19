@@ -1,6 +1,6 @@
 local function flatten_list(list, level, out)
 	if level == nil or out == nil then
-		assert(i == nil and out == nil)
+		assert(level == nil and out == nil)
 		level = 0
 		out = {}
 	end
@@ -116,7 +116,7 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 
 		local function do_set(type)
 			local area = self.list[self.selected]
-			local suc, msg = land.create_zone(area.id, type)
+			local _, msg = land.create_zone(area.id, type)
 			if msg then
 				minetest.chat_send_player(player:get_player_name(), msg)
 			end
