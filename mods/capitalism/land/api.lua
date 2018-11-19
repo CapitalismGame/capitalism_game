@@ -155,6 +155,37 @@ areas:registerOnMove(function(id, area, pos1, pos2)
 	-- print(dump({ id, area, pos1, pos2 }))
 end)
 
+function areas:canInteract(pos, name)
+	if minetest.check_player_privs(name, self.adminPrivs) then
+		return true
+	end
+
+	local areas = self:getAreasAtPos(pos)
+
+	-- TODO: protect children from parents
+	--
+	-- local area_by_id = {}
+	-- for _, area in pairs(areas) do
+	-- 	area_by_id[area.id] = area
+	-- end
+
+	for id, area in pairs(areas) do
+		local is_company = area.owner:sub(1, 2) == "c:"
+		if area.open then
+			return true
+		elseif is_company then
+			local cname = area.owner:sub(3, #area.owner)
+			if company.check_perm(name, cname, "INTERACT_AREA", id) then
+				return true
+			end
+		elseif area.owner == name then
+			return true
+		end
+	end
+	return false
+end
+
+
 local storage = minetest.get_mod_storage()
 lib_utils.make_saveload(land, storage, "_zones", "add_zone", land.Zone)
 land.load()

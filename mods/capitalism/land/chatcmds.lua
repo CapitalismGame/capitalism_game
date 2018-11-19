@@ -1,4 +1,6 @@
-minetest.register_privilege("land_admin")
+minetest.register_privilege("land_admin", {
+	give_to_singleplayer = false,
+})
 
 
 ChatCmdBuilder.new("land", function(cmd)

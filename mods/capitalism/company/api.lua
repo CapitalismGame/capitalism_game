@@ -43,6 +43,19 @@ function company.get_active(playername)
 	return name and company.get_by_name(name) or nil
 end
 
+function company.check_perm(username, cname, permission, meta)
+	local comp = company.get_active(username)
+	if not comp then
+		return false
+	end
+
+	if comp.name ~= cname then
+		return false
+	end
+
+	return comp:check_perm(username, permission, meta)
+end
+
 function company.get_active_or_msg(playername)
 	local comp = company.get_active(playername)
 	if comp then
