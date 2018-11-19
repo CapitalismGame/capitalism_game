@@ -107,6 +107,7 @@ function land.create_zone(id, type)
 	zone.id    = id
 	zone.type  = type
 	land.add_zone(zone)
+	land.save()
 	return zone
 end
 
@@ -126,19 +127,21 @@ function land.add_zone(z)
 
 	land._zones[#land._zones + 1] = z
 	land._zone_by_id[z.id]        = z
+
+	return z
 end
 
 
 areas:registerOnAdd(function(owner, name, pos1, pos2, parent)
-	print(dump({ owner, name, pos1, pos2, parent }))
+	-- print(dump({ owner, name, pos1, pos2, parent }))
 end)
 
 areas:registerOnRemove(function(id)
-	print(dump(id))
+	-- print(dump(id))
 end)
 
 areas:registerOnMove(function(id, area, pos1, pos2)
-	print(dump({ id, area, pos1, pos2 }))
+	-- print(dump({ id, area, pos1, pos2 }))
 end)
 
 local storage = minetest.get_mod_storage()
