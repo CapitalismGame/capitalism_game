@@ -7,8 +7,10 @@ function lib_quickfs.register(name, func, cb)
 		if formname == name then
 			local playername = player:get_player_name()
 			local context = player_contexts[playername]
-			if context then
-				return cb(context, player, formname, fields)
+
+			if context and cb(context, player, formname, fields) then
+				local formspec = func(context, playername)
+				minetest.show_formspec(playername, name, formspec)
 			end
 		end
 	end)

@@ -1,13 +1,18 @@
+minetest.register_privilege("land_admin")
+
+
 ChatCmdBuilder.new("land", function(cmd)
 	cmd:sub("debug", function(name)
+		if not minetest.check_player_privs(name, { land_admin = true }) then
+			return false, "Missing privilege: land_admin"
+		end
+
 		land.show_debug_to(name)
+		return true, "Showed land debug form"
 	end)
 end, {
 	description = "Land tools"
 })
-
-
-minetest.register_privilege("zone_admin")
 
 ChatCmdBuilder.new("zone", function(cmd)
 	cmd:sub("new :id:int :type", function(name, id, type)
