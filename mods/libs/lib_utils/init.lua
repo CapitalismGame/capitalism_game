@@ -1,6 +1,12 @@
 lib_utils = {}
 
 function lib_utils.make_saveload(tab, storage, itemarraykey, registername, class)
+	assert(tab)
+	assert(storage)
+	assert(itemarraykey)
+	assert(registername)
+	assert(class and class.new and class.from_table)
+
 	tab.save = function()
 		local res = _.map(tab[itemarraykey], function(item)
 			return item:to_table()
