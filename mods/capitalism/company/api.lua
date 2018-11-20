@@ -4,6 +4,8 @@ _.extend(company, {
 	_active_companies = {}
 })
 
+local adt = audit("company")
+
 function company.get_by_name(name)
 	return company._companies_by_name[name:lower()]
 end
@@ -28,6 +30,8 @@ function company.set_active(playername, comp)
 	if type(cname) ~= "string" then
 		cname = comp.name
 	end
+
+	adt:post(playername, cname, "Became active")
 
 	comp = company.get_by_name(cname)
 	if comp and comp:can_become_active(playername) then

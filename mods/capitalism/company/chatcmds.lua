@@ -1,3 +1,5 @@
+local adt = audit("company.cmd")
+
 ChatCmdBuilder.new("company", function(cmd)
 	cmd:sub("list", function(name)
 		if #company._companies == 0 then
@@ -25,6 +27,7 @@ ChatCmdBuilder.new("company", function(cmd)
 		end
 
 		if company.register(comp) then
+			adt:post(name, comp.name, "Registered company")
 			company.save()
 			return true, "Registered company"
 		else
