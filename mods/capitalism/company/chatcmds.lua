@@ -28,7 +28,6 @@ ChatCmdBuilder.new("company", function(cmd)
 
 		if company.create(comp) then
 			adt:post(name, comp.name, "Registered company")
-			company.save()
 			return true, "Registered company"
 		else
 			return false, "Unable to register company, an unknown error occured"

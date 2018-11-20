@@ -9,6 +9,7 @@ function lib_utils.make_saveload(tab, storage, itemarraykey, registername, class
 
 	tab.__saves = tab.__saves or {}
 	tab.__loads = tab.__loads or {}
+	tab.dirty = false
 
 	table.insert(tab.__saves, function()
 		local res = _.map(tab[itemarraykey], function(item)
@@ -27,15 +28,32 @@ function lib_utils.make_saveload(tab, storage, itemarraykey, registername, class
 		end)
 	end)
 
+	if not tab.save then
+		local function step()
+			if tab.dirty then
+				tab.save()
+			end
+
+			minetest.after(20, step)
+		end
+
+		minetest.after(math.random(5,13), step)
+		minetest.register_on_shutdown(function() tab.save() end)
+	end
+
 	tab.save = function()
 		for _, func in pairs(tab.__saves) do
 			func()
 		end
+
+		tab.dirty = false
 	end
 
 	tab.load = function()
 		for _, func in pairs(tab.__loads) do
 			func()
 		end
+
+		tab.dirty = false
 	end
 end

@@ -25,6 +25,8 @@ function company.create(obj)
 		return false
 	end
 
+	company.dirty = true
+
 	for _, func in pairs(company.registered_on_creates) do
 		func(obj)
 	end

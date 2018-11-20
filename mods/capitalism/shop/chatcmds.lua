@@ -22,7 +22,7 @@ ChatCmdBuilder.new("shop", function(cmd)
 		end
 
 		if shop.register_shop(sname, obj) then
-			shop.save()
+			shop.dirty = true
 			return true, "Registered shop"
 		else
 			return false, "Unable to register shop, a shop of that name already exists"

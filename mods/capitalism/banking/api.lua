@@ -12,6 +12,8 @@ end
 function banking.add_account(acc)
 	assert(not banking._account_by_owner[acc.owner])
 
+	banking.dirty = true
+
 	banking._accounts[#banking._accounts + 1] = acc
 	banking._account_by_owner[acc.owner]      = acc
 	return acc
@@ -55,6 +57,8 @@ function banking.transfer(actor, from, to, amount, reason)
 	end
 
 	to_acc:deposit(amount, from_acc, reason)
+
+	banking.dirty = true
 
 	adt:post(actor, from_company and from_company.name,
 		"Transfers " .. amount .. " to " .. to_acc.owner)
