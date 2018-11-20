@@ -81,6 +81,11 @@ function company.get_companies_for_player(name)
 	return comps
 end
 
+company.registered_panels = {}
+function company.register_panel(def)
+	table.insert(company.registered_panels, def)
+end
+
 -- Minetest won't be available in tests
 if minetest then
 	local storage = minetest.get_mod_storage()

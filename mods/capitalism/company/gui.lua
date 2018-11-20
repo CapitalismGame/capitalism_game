@@ -66,6 +66,42 @@ sfinv.register_page("company:company", {
 			"button[6,0;2,1;switch;Switch]"
 		}
 
+		if comp then
+			local i = 0
+			for _, panel in pairs(company.registered_panels) do
+				if not panel.show_to or panel:show_to(player, comp, context) then
+					formspec[#formspec + 1] = "container["
+					formspec[#formspec + 1] = tostring((i % 2) * 4)
+					formspec[#formspec + 1] = ","
+					formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2 + 1)
+					formspec[#formspec + 1] = ".3]"
+
+					formspec[#formspec + 1] = "label[1.5,-0.3;"
+					formspec[#formspec + 1] = panel.title
+					formspec[#formspec + 1] = "]"
+
+					formspec[#formspec + 1] = "box[0,-0.3;3.8,1.8;"
+					formspec[#formspec + 1] = panel.bgcolor
+					formspec[#formspec + 1] = "]"
+
+					formspec[#formspec + 1] = panel:get(player, comp, context)
+					formspec[#formspec + 1] = "container_end[]"
+
+					i = i + 1
+				end
+			end
+
+			while i < 2*4 do
+				formspec[#formspec + 1] = "box["
+				formspec[#formspec + 1] = tostring((i % 2) * 4)
+				formspec[#formspec + 1] = ","
+				formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2 + 1)
+				formspec[#formspec + 1] = ";3.8,1.8;#111]"
+
+				i = i + 1
+			end
+		end
+
 		-- Wrap the formspec in sfinv's layout (ie: adds the tabs and background)
 		return sfinv.make_formspec(player, context,
 				table.concat(formspec, ""), false)
@@ -77,5 +113,14 @@ sfinv.register_page("company:company", {
 	end,
 })
 
+-- Place company page at front
 table.insert(sfinv.pages_unordered, 1, sfinv.pages["company:company"])
 table.remove(sfinv.pages_unordered, #sfinv.pages_unordered)
+
+company.register_panel({
+	title = "Company House",
+	bgcolor = "#396",
+	get   = function(_, comp, _)
+		return "button[0.2,0.2;2,1;edit;Edit]"
+	end,
+})
