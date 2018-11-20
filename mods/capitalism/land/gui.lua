@@ -80,8 +80,7 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 		fs[#fs + 1] = "]"
 
 		if self.selected then
-			local area = list[self.selected]
-
+			-- local area = list[self.selected]
 			-- fs[#fs + 1] = "box[5,1;1.8,0.8;#222]"
 			fs[#fs + 1] = "button[5,0;2,1;to_comm;Commercial]"
 			fs[#fs + 1] = "button[5,1;2,1;to_inds;Industrial]"
