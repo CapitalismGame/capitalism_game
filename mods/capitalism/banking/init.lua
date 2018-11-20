@@ -1,14 +1,6 @@
-local banking = {}
+banking = {}
 
-function banking.get_balance(comp)
-	return 1000000
-end
-
-
-company.register_panel({
-	title = "Finance",
-	bgcolor = "#DAA520",
-	get = function(_, comp, _)
-		return "label[0.2,0.2;" .. minetest.formspec_escape("Balance: " .. banking.get_balance(comp)) .. "]"
-	end,
-})
+dofile(minetest.get_modpath("banking") .. "/account.lua")
+dofile(minetest.get_modpath("banking") .. "/api.lua")
+dofile(minetest.get_modpath("banking") .. "/gui.lua")
+dofile(minetest.get_modpath("banking") .. "/chatcmds.lua")

@@ -26,7 +26,7 @@ ChatCmdBuilder.new("company", function(cmd)
 				"Please choose a unique name, that was too similar to " .. existing.name
 		end
 
-		if company.register(comp) then
+		if company.create(comp) then
 			adt:post(name, comp.name, "Registered company")
 			company.save()
 			return true, "Registered company"

@@ -5,7 +5,6 @@ function Company:new(obj)
 	obj = obj or {}
 	setmetatable(obj, self)
 	self.__index = self
-	self.balance = 0
 	self.owner   = nil
 	return obj
 end
@@ -14,7 +13,6 @@ function Company:to_table()
 	return {
 		title   = self.title,
 		name    = self.name,
-		balance = self.balance,
 		owner   = self.owner
 	}
 end
@@ -22,19 +20,13 @@ end
 function Company:from_table(t)
 	self.title   = t.title
 	self.name    = t.name
-	self.balance = t.balance
 	self.owner   = t.owner
-	return self.name ~= nil and self.balance ~= nil and self.owner ~= nil
+	return self.name ~= nil and self.owner ~= nil
 end
 
 function Company:set_title_calc_name(title)
 	self.title = title
 	self.name = title:lower():gsub("%W", "_")
-end
-
-function Company:get_balance()
-	-- TODO: banks
-	return self.balance
 end
 
 function Company:get_ceo_name()

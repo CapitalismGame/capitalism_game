@@ -10,7 +10,29 @@ function company.get_by_name(name)
 	return company._companies_by_name[name:lower()]
 end
 
-function company.register(obj)
+function company.get_from_owner_str(str)
+	assert(type(str) == "string")
+	if str:sub(1, 2) ~= "c:" then
+		return nil
+	end
+
+	local cname = str:sub(3, #str)
+	return company.get_by_name(cname)
+end
+
+function company.create(obj)
+	if not company.add(obj) then
+		return false
+	end
+
+	for _, func in pairs(company.registered_on_creates) do
+		func(obj)
+	end
+
+	return true
+end
+
+function company.add(obj)
 	if not obj.name or obj.name:match("[^a-z_]") then
 		print("/!\\ Company name is invalid: " .. obj.name)
 		return false
@@ -81,6 +103,11 @@ function company.get_companies_for_player(name)
 	return comps
 end
 
+company.registered_on_creates = {}
+function company.register_on_create(func)
+	table.insert(company.registered_on_creates, func)
+end
+
 company.registered_panels = {}
 function company.register_panel(def)
 	table.insert(company.registered_panels, def)
@@ -89,6 +116,6 @@ end
 -- Minetest won't be available in tests
 if minetest then
 	local storage = minetest.get_mod_storage()
-	lib_utils.make_saveload(company, storage, "_companies", "register", company.Company)
+	lib_utils.make_saveload(company, storage, "_companies", "add", company.Company)
 	company.load()
 end

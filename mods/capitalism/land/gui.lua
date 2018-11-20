@@ -137,7 +137,7 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 company.register_panel({
 	title = "Land",
 	bgcolor = "#A0522D",
-	get = function(_, _, _)
+	get = function(_, _, _, _)
 		local text = "Total: 1 ($100,000)\nCommercial: 1 ($100,000)\nIndustrial: 0 ($0)"
 		return "label[0.2,0.2;" .. minetest.formspec_escape(text) .. "]"
 	end,

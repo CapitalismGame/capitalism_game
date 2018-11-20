@@ -120,7 +120,7 @@ table.remove(sfinv.pages_unordered, #sfinv.pages_unordered)
 company.register_panel({
 	title = "Company House",
 	bgcolor = "#369",
-	get = function(_, _, _)
+	get = function(_, _, _, _)
 		return ""
 	end,
 })
@@ -128,7 +128,11 @@ company.register_panel({
 company.register_panel({
 	title = "Employees",
 	bgcolor = "#396",
-	get = function(_, _, _)
+	get = function(_, _, _, _)
 		return "label[0.2,0.2;0 employees.]"
 	end,
 })
+
+function sfinv.get_homepage_name(player)
+	return "company:company"
+end

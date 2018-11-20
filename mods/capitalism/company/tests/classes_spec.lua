@@ -9,7 +9,6 @@ local Company = company.Company
 describe("company.Company", function()
 	it("constructs", function()
 		local company = Company:new()
-		assert.equals(company.balance, 0)
 		assert.is_nil(company.owner)
 	end)
 
@@ -29,10 +28,5 @@ describe("company.Company", function()
 		company.owner = "foobar"
 		assert.is_true (company:check_perm("foobar", "anything"))
 		assert.is_false(company:check_perm("sdsddd", "anything"))
-	end)
-
-	it("has balance", function()
-		local company = Company:new()
-		assert.equals(company:get_balance(), 0)
 	end)
 end)

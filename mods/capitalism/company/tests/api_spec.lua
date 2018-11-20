@@ -15,7 +15,7 @@ describe("company", function()
 		local comp = company.Company:new()
 		comp:set_title_calc_name("Test Company")
 		comp.owner = "testuser"
-		assert.is_true(company.register(comp))
+		assert.is_true(company.add(comp))
 		assert.equals("test_company", comp.name)
 	end)
 
@@ -24,6 +24,16 @@ describe("company", function()
 		assert.is_not_nil(comp)
 		assert.equals("test_company", comp.name)
 		assert.equals("testuser",     comp.owner)
+	end)
+
+	it("get_from_owner_str", function()
+		local comp = company.get_from_owner_str("c:test_company")
+		assert.is_not_nil(comp)
+		assert.equals("test_company", comp.name)
+		assert.equals("testuser",     comp.owner)
+
+		assert.is_nil(company.get_from_owner_str("c:nonexistant"))
+		assert.is_nil(company.get_from_owner_str("test_company"))
 	end)
 
 	it("active_company", function()
