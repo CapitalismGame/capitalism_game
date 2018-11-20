@@ -2,6 +2,9 @@ package.path = 'mods/?.lua;' ..
 				package.path
 
 _G.company = {}
+_G.audit = function()
+	return { post = function() end }
+end
 
 require("libs/lib_underscore/init")
 require("capitalism/company/api")

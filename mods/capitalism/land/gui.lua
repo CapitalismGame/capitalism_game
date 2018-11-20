@@ -138,6 +138,7 @@ company.register_panel({
 	title = "Land",
 	bgcolor = "#A0522D",
 	get = function(_, _, _)
-		return "label[0.2,0.2;" .. minetest.formspec_escape("Total: 1 ($100,000)\nCommercial: 1 ($100,000)\nIndustrial: 0 ($0)") .. "]"
+		local text = "Total: 1 ($100,000)\nCommercial: 1 ($100,000)\nIndustrial: 0 ($0)"
+		return "label[0.2,0.2;" .. minetest.formspec_escape(text) .. "]"
 	end,
 })
