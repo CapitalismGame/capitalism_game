@@ -119,8 +119,16 @@ table.remove(sfinv.pages_unordered, #sfinv.pages_unordered)
 
 company.register_panel({
 	title = "Company House",
+	bgcolor = "#369",
+	get = function(_, _, _)
+		return ""
+	end,
+})
+
+company.register_panel({
+	title = "Employees",
 	bgcolor = "#396",
-	get   = function(_, comp, _)
-		return "button[0.2,0.2;2,1;edit;Edit]"
+	get = function(_, _, _)
+		return "label[0.2,0.2;0 employees.]"
 	end,
 })

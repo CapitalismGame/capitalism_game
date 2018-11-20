@@ -7,8 +7,8 @@ end
 
 company.register_panel({
 	title = "Finance",
-	bgcolor = "#960",
-	get   = function(_, comp, _)
+	bgcolor = "#DAA520",
+	get = function(_, comp, _)
 		return "label[0.2,0.2;" .. minetest.formspec_escape("Balance: " .. banking.get_balance(comp)) .. "]"
 	end,
 })
