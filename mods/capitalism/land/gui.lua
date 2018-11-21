@@ -133,6 +133,29 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 		end
 	end, { land_admin = true })
 
+land.show_set_price_to = lib_quickfs.register("land:set_price", function(self, playername)
+		local area = self.args[1]
+		assert(area.owner and area.pos2)
+		local fs = {
+			"size[3,2]",
+			"field[0.3,0.5;3,1;price;Price;", tostring(area.land_sale), "]",
+			"button_exit[1,1.2;1,1;set;Set]"
+		}
+
+		return table.concat(fs, "")
+	end,
+	function(self, player, formname, fields)
+		local area = self.args[1]
+		if not area then
+			return
+		end
+
+		if fields.set then
+			land.set_price(area, player:get_player_name(), fields.price)
+		end
+	end)
+
+
 
 company.register_panel({
 	title = "Land",

@@ -52,3 +52,7 @@ function Company:check_perm(username, permission)
 	-- TODO: permissions
 	return self:get_ownership(username) > 0
 end
+
+function Company:is_government()
+	return self.name == "government"
+end

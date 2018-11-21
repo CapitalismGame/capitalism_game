@@ -43,11 +43,11 @@ company.show_company_select_dialog =
 		if fields.switch and context.comps then
 			local comp_name = context.comps[context.idx or 1]
 			company.set_active(name, comp_name)
+			sfinv.set_page_and_show(player, "company:company")
 		elseif not (fields.quit ~= "" or fields.back) then
+			sfinv.set_page_and_show(player, "company:company")
 			return
 		end
-
-		sfinv.set_page_and_show(player, "company:company")
 	end)
 
 sfinv.register_page("company:company", {
