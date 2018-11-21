@@ -84,6 +84,54 @@ function land.get_by_area_id(id)
 	return area and area.land_type and area
 end
 
+function land.transfer(id, newowner, pname)
+	assert(type(id) == "number")
+	assert(type(newowner) == "string")
+	assert(type(pname) == "string")
+
+	local area = areas.areas[id]
+	if not area then
+		return false, "Unable to find area id=" .. id
+	end
+
+	if not area.parent then
+		return false, "Unable to transfer root areas"
+	end
+
+	local land_admin = minetest.check_player_privs(pname, { land_admin = true })
+	local comp       = company.get_from_owner_str(area.owner)
+	if not land_admin then
+		if comp then
+			local comp_active = company.get_active(pname)
+			if not comp_active or comp_active.name ~= comp.name then
+				return false, "You're not currently acting on behalf of " .. comp.title
+			end
+
+			if not comp:check_perm(pname, "TRANSFER_LAND") then
+				return false, "Missing permission: TRANSFER_LAND"
+			end
+		elseif pname ~= area.owner then
+			return false, "You don't have access to land owned by " .. area.owner
+		end
+	end
+
+	if not minetest.player_exists(newowner) and
+			not company.get_from_owner_str(newowner)  then
+		if newowner:sub(1, 2) == "c:" then
+			return false, "New owner " .. newowner .. " doesn't exist"
+		else
+			return false, "New owner " .. newowner .. " doesn't exist (did you forget 'c:'?)"
+		end
+	end
+
+	adt:post(pname, comp.name, "Transferred area id=" .. id .. " to " .. newowner)
+
+	area.owner = newowner
+	areas:save()
+
+	return true, "Transfered area id=" .. id .. " to " .. newowner
+end
+
 function land.can_set_price(area, pname)
 	if not area or not area.land_type then
 		return false, "Unable to sell unowned or unclassified (ie: c/i/r) area"

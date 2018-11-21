@@ -13,6 +13,19 @@ ChatCmdBuilder.new("land", function(cmd)
 		return true, "Showed land debug form"
 	end)
 
+	cmd:sub("owner :id:int :newowner", function(name, id, newowner)
+		return land.transfer(id, newowner, name)
+	end)
+
+	cmd:sub("owner :id:int", function(name, id)
+		local area = areas.areas[id]
+		if not area then
+			return false, "Unable to find area id=" .. id
+		end
+
+		return true, area.owner
+	end)
+
 	cmd:sub("set_type :id:int :type", function(name, id, type)
 		if not minetest.check_player_privs(name, { land_admin = true }) then
 			return false, "Missing privilege: land_admin"
