@@ -20,6 +20,8 @@ function banking.add_account(acc)
 end
 
 function banking.get_by_owner(owner)
+	assert(type(owner) == "string")
+
 	return banking._account_by_owner[owner]
 end
 
@@ -27,6 +29,7 @@ function banking.get_by_company(cname)
 	if type(cname) == "table" then
 		cname = cname.name
 	end
+	assert(type(cname) == "string")
 
 	return banking.get_by_owner("c:" .. cname)
 end
@@ -71,16 +74,3 @@ company.register_on_create(function(comp)
 	acc.owner = "c:" .. comp.name
 	banking.add_account(acc)
 end)
-
-
-local storage = minetest.get_mod_storage()
-lib_utils.make_saveload(banking, storage, "_accounts", "add_account", banking.Account)
-banking.load()
-
-for _, comp in pairs(company._companies) do
-	if not banking.get_by_company(comp) then
-		local acc = banking.Account:new()
-		acc.owner = "c:" .. comp.name
-		banking.add_account(acc)
-	end
-end

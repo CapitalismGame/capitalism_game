@@ -25,6 +25,8 @@ function Company:from_table(t)
 end
 
 function Company:set_title_calc_name(title)
+	assert(type(title) == "string")
+
 	self.title = title
 	self.name = title:lower():gsub("%W", "_")
 end
@@ -46,7 +48,7 @@ function Company:can_become_active(username)
 	return self:check_perm(username, "SWITCH_TO")
 end
 
-function Company:check_perm(username, permisson)
+function Company:check_perm(username, permission)
 	-- TODO: permissions
 	return self:get_ownership(username) > 0
 end

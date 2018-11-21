@@ -23,7 +23,21 @@ describe("company.Company", function()
 		assert.equals(company:get_ownership(""),           0)
 	end)
 
-	it("has permissons", function()
+	it("has ceo", function()
+		local company = Company:new()
+		company.owner = "foobar"
+		assert.equals(company:get_ceo_name(), "foobar")
+	end)
+
+	it("can become active", function()
+		local company = Company:new()
+		assert.is_false(company:can_become_active("foobar"))
+		company.owner = "foobar"
+		assert.is_true (company:can_become_active("foobar"))
+		assert.is_false(company:can_become_active("sdsddd"))
+	end)
+
+	it("has permissions", function()
 		local company = Company:new()
 		company.owner = "foobar"
 		assert.is_true (company:check_perm("foobar", "anything"))

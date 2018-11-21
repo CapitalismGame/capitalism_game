@@ -11,12 +11,14 @@ require("capitalism/company/api")
 require("capitalism/company/company")
 
 describe("company", function()
-	it("register", function()
+	it("add", function()
 		local comp = company.Company:new()
 		comp:set_title_calc_name("Test Company")
 		comp.owner = "testuser"
+		assert.equals (#company._companies, 0)
 		assert.is_true(company.add(comp))
-		assert.equals("test_company", comp.name)
+		assert.equals (#company._companies, 1)
+		assert.equals ("test_company", comp.name)
 	end)
 
 	it("get_by_name", function()
@@ -54,5 +56,11 @@ describe("company", function()
 
 		comps = company.get_companies_for_player("nonexistant")
 		assert.equals(0, #comps)
+	end)
+
+	it("check_perm", function()
+		assert.is_false(company.check_perm("baduser", "test_company", "TEST_PERM", nil))
+		assert.is_false(company.check_perm("baduser", "nonexistant", "TEST_PERM", nil))
+		assert.is_true(company.check_perm("testuser", "test_company", "TEST_PERM", nil))
 	end)
 end)

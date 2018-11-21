@@ -37,8 +37,11 @@ function land.get_area_tree(list)
 	return root, item_by_id
 end
 
-function land.get_for_player(name)
-	local comp = company.get_active(name)
+function land.get_for_player(pname)
+	assert(type(pname) == "string")
+	assert(minetest.player_exists(pname))
+
+	local comp = company.get_active(pname)
 	if not comp then
 		return nil
 	end
@@ -51,6 +54,8 @@ function land.get_for_company(comp)
 end
 
 function land.get_by_area_id(id)
+	assert(type(id) == "number")
+
 	local area = areas.areas[id]
-	return area.land_type and area
+	return area and area.land_type and area
 end

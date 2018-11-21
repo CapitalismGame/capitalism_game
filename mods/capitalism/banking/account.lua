@@ -30,6 +30,8 @@ function Account:from_table(t)
 end
 
 function Account:withdraw(amount, to, reason)
+	assert(amount > 0)
+
 	if amount > self.balance then
 		return false
 	end
@@ -39,5 +41,7 @@ function Account:withdraw(amount, to, reason)
 end
 
 function Account:deposit(amount, to, reason)
+	assert(amount > 0)
+
 	self.balance = self.balance + amount
 end
