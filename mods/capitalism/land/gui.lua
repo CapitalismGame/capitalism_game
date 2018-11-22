@@ -212,8 +212,20 @@ land.show_buy_to = lib_quickfs.register("land:set_price", function(self, pname)
 company.register_panel({
 	title = "Land",
 	bgcolor = "#A0522D",
-	get = function(_, _, _, _)
-		local text = "Total: 1 ($100,000)\nCommercial: 1 ($100,000)\nIndustrial: 0 ($0)"
+	get = function(_, _, comp, _)
+		local areas = land.get_all(comp.name)
+
+		local sums   = {}
+		for i=1, #areas do
+			local key = areas[i].land_type
+			sums[key] = (sums[key] or 0) + 1
+		end
+
+		local text  = "Total: " .. #areas
+		for key, value in pairs(sums) do
+			text = text .. "\n" .. key .. ": " .. value
+		end
+
 		return "label[0.2,0.2;" .. minetest.formspec_escape(text) .. "]"
 	end,
 })
