@@ -99,7 +99,7 @@ function land.transfer(id, newowner, pname)
 	end
 
 	local land_admin = minetest.check_player_privs(pname, { land_admin = true })
-	local comp       = company.get_from_owner_str(area.owner)
+	local comp       = company.get_by_name(area.owner)
 	if not land_admin then
 		if comp then
 			local comp_active = company.get_active(pname)
@@ -116,7 +116,7 @@ function land.transfer(id, newowner, pname)
 	end
 
 	if not minetest.player_exists(newowner) and
-			not company.get_from_owner_str(newowner)  then
+			not company.get_by_name(newowner)  then
 		if newowner:sub(1, 2) == "c:" then
 			return false, "New owner " .. newowner .. " doesn't exist"
 		else
@@ -137,7 +137,7 @@ function land.can_set_price(area, pname)
 		return false, "Unable to sell unowned or unclassified (ie: c/i/r) area"
 	end
 
-	local comp = company.get_from_owner_str(area.owner)
+	local comp = company.get_by_name(area.owner)
 	if not comp or not comp:is_government() then
 		return false, "Only the government is currently able to sell land."
 	end
@@ -148,7 +148,7 @@ function land.can_set_price(area, pname)
 	end
 
 	if pname and comp and
-			not comp:check_perm(pname, "SELL_AREA", { area=area }) then
+			not comp:check_perm(pname, "SELL_LAND", { area=area }) then
 		return false, "You do not have permission to sell this area."
 	end
 
@@ -170,7 +170,7 @@ function land.set_price(area, pname, price)
 	end
 
 	if pname then
-		adt:post(pname, company.get_from_owner_str(area.owner),
+		adt:post(pname, company.get_by_name(area.owner),
 				"Set price for area id=" .. area.id .. " to " .. price)
 	end
 
@@ -187,7 +187,7 @@ function land.can_buy(area, pname, comp)
 		return false, "Missing permission: BUY_LAND"
 	end
 
-	local acc = banking.get_by_owner(comp and ("c:" .. comp.name) or pname)
+	local acc = banking.get_by_owner(comp and comp.name or pname)
 	if not acc then
 		return false, "You don't have a bank account"
 	end
@@ -210,7 +210,7 @@ function land.buy(area, pname)
 		return false
 	end
 
-	local account = banking.get_by_owner(comp and ("c:" .. comp.name) or pname)
+	local account = banking.get_by_owner(comp and comp.name or pname)
 	local owner_account = banking.get_by_owner(area.owner)
 	assert(account)
 	assert(owner_account)
@@ -224,7 +224,7 @@ function land.buy(area, pname)
 			"Bought land id=" .. area.id .. " from " .. owner_account.owner)
 
 	area.land_sale = nil
-	area.owner     = comp and ("c:" .. comp.name) or pname
+	area.owner     = comp and comp.name or pname
 	areas:save()
 	return true
 end

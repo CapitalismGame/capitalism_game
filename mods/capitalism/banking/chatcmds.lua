@@ -29,7 +29,9 @@ ChatCmdBuilder.new("banking", function(cmd)
 			return false, "Unable to find an account for " .. to
 		end
 
-		local suc, msg = banking.transfer(name, "c:" .. comp.name, to, amount, reason)
+		assert(comp.name:sub(1, 2) == "c:")
+
+		local suc, msg = banking.transfer(name, comp.name, to, amount, reason)
 		return suc, suc and "Transfered" or msg
 	end)
 end, {

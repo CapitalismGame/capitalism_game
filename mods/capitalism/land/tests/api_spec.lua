@@ -10,12 +10,12 @@ end
 require("capitalism/land/api")
 
 _G.company = {}
-function company.get_from_owner_str(owner)
+function company.get_by_name(owner)
 	local data
 	if owner == "c:government" then
-		data = { name = "government", title = "Government", owner = "testuser" }
+		data = { name = "c:government", title = "Government", owner = "testuser" }
 	elseif owner == "c:test" then
-		data = { name = "test", title = "Test", owner = "testuser" }
+		data = { name = "c:test", title = "Test", owner = "testuser" }
 	else
 		return nil
 	end
@@ -25,7 +25,7 @@ function company.get_from_owner_str(owner)
 	end
 
 	function data:is_government()
-		return self.name == "government"
+		return self.name == "c:government"
 	end
 
 	return data
@@ -33,7 +33,7 @@ end
 
 function company.get_active(pname)
 	if pname == "testuser" and company.is_active then
-		return company.get_from_owner_str("c:government")
+		return company.get_by_name("c:government")
 	end
 end
 

@@ -3,8 +3,13 @@ banking._account_by_owner = {}
 
 local adt = audit("banking")
 
-function banking.get_balance(comp)
-	local acc = banking.get_by_company(comp)
+function banking.get_balance(owner)
+	if type(owner) == "table" then
+		owner = owner.name
+	end
+	assert(type(owner) == "string")
+
+	local acc = banking.get_by_owner(owner)
 	assert(acc)
 	return acc.balance
 end
@@ -25,15 +30,6 @@ function banking.get_by_owner(owner)
 	return banking._account_by_owner[owner]
 end
 
-function banking.get_by_company(cname)
-	if type(cname) == "table" then
-		cname = cname.name
-	end
-	assert(type(cname) == "string")
-
-	return banking.get_by_owner("c:" .. cname)
-end
-
 function banking.transfer(actor, from, to, amount, reason)
 	assert(type(actor)  == "string")
 	assert(type(from)   == "string")
@@ -47,7 +43,7 @@ function banking.transfer(actor, from, to, amount, reason)
 	local to_acc   = banking.get_by_owner(to)
 	assert(to_acc)
 
-	local from_company = company.get_from_owner_str(from_acc.owner)
+	local from_company = company.get_by_name(from_acc.owner)
 	local meta = { from = from, to = to, amount = amount }
 
 	if from_company and
@@ -71,6 +67,7 @@ end
 
 company.register_on_create(function(comp)
 	local acc = banking.Account:new()
-	acc.owner = "c:" .. comp.name
+	assert(comp.name:sub(1, 2) == "c:")
+	acc.owner = comp.name
 	banking.add_account(acc)
 end)

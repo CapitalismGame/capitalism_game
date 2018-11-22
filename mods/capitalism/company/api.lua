@@ -14,17 +14,6 @@ function company.get_by_name(name)
 	return company._companies_by_name[name:lower()]
 end
 
-function company.get_from_owner_str(str)
-	assert(type(str) == "string")
-
-	if str:sub(1, 2) ~= "c:" then
-		return nil
-	end
-
-	local cname = str:sub(3, #str)
-	return company.get_by_name(cname)
-end
-
 function company.create(obj)
 	assert(type(obj) == "table")
 	assert(obj.get_ownership)
@@ -46,7 +35,10 @@ function company.add(obj)
 	assert(type(obj) == "table")
 	assert(obj.get_ownership)
 
-	if not obj.name or obj.name:match("[^a-z_]") then
+	if not obj.name or
+			#obj.name < 3 or
+			obj.name:sub(1, 2) ~= "c:" or
+			obj.name:sub(3, #obj.name):match("[^a-z_]") then
 		print("/!\\ Company name is invalid: " .. obj.name)
 		return false
 	elseif company._companies_by_name[obj.name] then

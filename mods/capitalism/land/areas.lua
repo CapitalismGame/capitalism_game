@@ -23,8 +23,7 @@ function areas:canInteract(pos, name)
 		if area.open then
 			return true
 		elseif is_company then
-			local cname = area.owner:sub(3, #area.owner)
-			if company.check_perm(name, cname, "INTERACT_AREA", id) then
+			if company.check_perm(name, area.owner, "INTERACT_AREA", id) then
 				return true
 			end
 		elseif area.owner == name then
@@ -42,7 +41,7 @@ function areas:isAreaOwner(id, name)
 	while cur do
 		local is_company = cur.owner:sub(1, 2) == "c:"
 		if is_company and
-				company.check_perm(name, cur.owner:sub(3, #cur.owner), "OWNS_AREA", id) then
+				company.check_perm(name, cur.owner, "OWNS_AREA", id) then
 			return true
 		elseif cur.owner == name then
 			return true
