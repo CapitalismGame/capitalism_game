@@ -16,7 +16,7 @@ ChatCmdBuilder.new("banking", function(cmd)
 		end
 
 		acc.balance = acc.balance + amount
-		return true, "Gave " .. acc.balance .. " to " .. owner
+		return true, "Gave " .. amount .. " to " .. owner
 	end)
 
 	cmd:sub("transfer :to:owner :amount:int :reason:text", function(name, to, amount, reason)

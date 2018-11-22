@@ -4,13 +4,25 @@ minetest.register_privilege("land_admin", {
 
 
 ChatCmdBuilder.new("land", function(cmd)
-	cmd:sub("debug", function(name)
+	cmd:sub("admin", function(name)
 		if not minetest.check_player_privs(name, { land_admin = true }) then
 			return false, "Missing privilege: land_admin"
 		end
 
 		land.show_debug_to(name)
 		return true, "Showed land debug form"
+	end)
+
+
+	cmd:sub("list", function(name)
+		local comp  = company.get_active(name)
+		local owner = comp and comp.name or name
+		local areas = land.get_all(owner)
+
+		return true, "Areas owned by " .. owner .. "\n" ..
+			table.concat(_.map(areas, function(area)
+				return " - " .. area.name .. " [id=" .. area.id .. "]"
+			end), "\n")
 	end)
 
 	cmd:sub("owner :id:int :newowner:owner", function(name, id, newowner)

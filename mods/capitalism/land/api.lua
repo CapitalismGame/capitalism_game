@@ -39,20 +39,16 @@ function land.get_area_tree(list)
 	return root, item_by_id
 end
 
-function land.get_for_player(pname)
-	assert(type(pname) == "string")
-	assert(minetest.player_exists(pname))
-
-	local comp = company.get_active(pname)
-	if not comp then
-		return nil
+function land.get_all(owner)
+	local lands = {}
+	for id, area in pairs(areas.areas) do
+		if area.land_type and area.owner == owner then
+			area.id = id
+			lands[#lands + 1] = area
+		end
 	end
 
-	return land.get_for_company(comp)
-end
-
-function land.get_for_company(comp)
-
+	return lands
 end
 
 function land.get_by_pos(pos)
