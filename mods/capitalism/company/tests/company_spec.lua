@@ -3,6 +3,7 @@ package.path = 'mods/?.lua;' ..
 
 _G.company = {}
 
+require("capitalism/company/permissions")
 require("capitalism/company/company")
 
 local Company = company.Company
@@ -40,7 +41,7 @@ describe("company.Company", function()
 	it("has permissions", function()
 		local company = Company:new()
 		company.owner = "foobar"
-		assert.is_true (company:check_perm("foobar", "anything"))
-		assert.is_false(company:check_perm("sdsddd", "anything"))
+		assert.is_true (company:check_perm("foobar", "SWITCH_TO"))
+		assert.is_false(company:check_perm("sdsddd", "SWITCH_TO"))
 	end)
 end)

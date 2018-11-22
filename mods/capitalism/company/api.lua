@@ -93,6 +93,7 @@ function company.check_perm(pname, cname, permission, meta)
 	assert(player_exists(pname))
 	assert(type(cname) == "string")
 	assert(type(permission) == "string")
+	assert(company.permissions[permission])
 
 	local comp = company.get_active(pname)
 	if not comp then

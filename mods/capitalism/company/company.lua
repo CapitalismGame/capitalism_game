@@ -49,6 +49,7 @@ function Company:can_become_active(username)
 end
 
 function Company:check_perm(username, permission)
+	assert(company.permissions[permission])
 	-- TODO: permissions
 	return self:get_ownership(username) > 0
 end

@@ -8,6 +8,7 @@ _G.audit = function()
 end
 
 require("libs/lib_underscore/init")
+require("capitalism/company/permissions")
 require("capitalism/company/api")
 require("capitalism/company/company")
 require("capitalism/banking/api")

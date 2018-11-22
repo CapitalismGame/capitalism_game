@@ -7,6 +7,7 @@ _G.audit = function()
 end
 
 require("libs/lib_underscore/init")
+require("capitalism/company/permissions")
 require("capitalism/company/api")
 require("capitalism/company/company")
 
@@ -59,8 +60,8 @@ describe("company", function()
 	end)
 
 	it("check_perm", function()
-		assert.is_false(company.check_perm("baduser", "test_company", "TEST_PERM", nil))
-		assert.is_false(company.check_perm("baduser", "nonexistant", "TEST_PERM", nil))
-		assert.is_true(company.check_perm("testuser", "test_company", "TEST_PERM", nil))
+		assert.is_false(company.check_perm("baduser", "test_company", "SWITCH_TO", nil))
+		assert.is_false(company.check_perm("baduser", "nonexistant", "SWITCH_TO", nil))
+		assert.is_true(company.check_perm("testuser", "test_company", "SWITCH_TO", nil))
 	end)
 end)
