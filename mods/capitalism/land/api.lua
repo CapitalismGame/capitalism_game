@@ -156,6 +156,10 @@ function land.can_set_price(area, pname)
 end
 
 function land.set_price(area, pname, price)
+	assert(type(area) == "table")
+	assert(pname == nil or type(pname) == "string")
+	assert(type(price) == "number")
+
 	if price <= 0 then
 		return false, "Price must be greater than 0"
 	end
@@ -171,6 +175,56 @@ function land.set_price(area, pname, price)
 	end
 
 	area.land_sale = price
+	areas:save()
+	return true
+end
+
+function land.can_buy(area, pname, comp)
+	assert(type(area) == "table")
+	assert(type(pname) == "string")
+
+	if comp and not comp:check_perm(pname, "BUY_LAND", { area = area }) then
+		return false, "Missing permission: BUY_LAND"
+	end
+
+	local acc = banking.get_by_owner(comp and ("c:" .. comp.name) or pname)
+	if not acc then
+		return false, "You don't have a bank account"
+	end
+
+	if acc.balance < area.land_sale then
+		return false, "Insufficient funds"
+	end
+
+	return true
+end
+
+function land.buy(area, pname)
+	assert(type(area) == "table")
+	assert(type(pname) == "string")
+	assert(minetest.player_exists(pname))
+
+	local comp = company.get_active(pname)
+
+	if not land.can_buy(area, pname, comp) then
+		return false
+	end
+
+	local account = banking.get_by_owner(comp and ("c:" .. comp.name) or pname)
+	local owner_account = banking.get_by_owner(area.owner)
+	assert(account)
+	assert(owner_account)
+
+	if not banking.transfer(pname, account.owner, owner_account.owner, area.land_sale,
+		"Purchase of land id=" .. area.id) then
+		return false
+	end
+
+	adt:post(pname, comp,
+			"Bought land id=" .. area.id .. " from " .. owner_account.owner)
+
+	area.land_sale = nil
+	area.owner     = comp and ("c:" .. comp.name) or pname
 	areas:save()
 	return true
 end

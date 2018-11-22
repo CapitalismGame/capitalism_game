@@ -151,10 +151,62 @@ land.show_set_price_to = lib_quickfs.register("land:set_price", function(self, p
 		end
 
 		if fields.set then
-			land.set_price(area, player:get_player_name(), fields.price)
+			land.set_price(area, player:get_player_name(), tonumber(fields.price))
 		end
 	end)
 
+
+land.show_buy_to = lib_quickfs.register("land:set_price", function(self, pname)
+		local area = self.args[1]
+		assert(area.owner and area.pos2)
+		assert(area.land_sale)
+
+		local price_changed = self.price and self.price ~= area.land_sale
+		self.price = area.land_sale
+
+		local fs = {
+			"size[5,2.4]",
+			company.get_company_header(pname, 5, "balance"),
+			"box[-0.3,1.15;5.4,0.4;",
+			price_changed and "#f00" or "#111",
+			"]label[0,1.1;",
+			minetest.formspec_escape(
+				(price_changed and "Price changed:" or "For sale for ") ..
+					area.land_sale),
+			"]",
+		}
+
+		local comp     = company.get_active(pname)
+		local suc, msg = land.can_buy(area, pname, comp)
+		if suc then
+			fs[#fs + 1] = "button_exit[0.5,1.7;2,1;back;Back]"
+			fs[#fs + 1] = "button_exit[2.5,1.7;2,1;buy;Buy]"
+		else
+			fs[#fs + 1] = "box[-0.3,1.55;5.4,1.3;#f00]"
+			fs[#fs + 1] = "label[0,1.8;" .. msg .. "]"
+		end
+
+		return table.concat(fs, "")
+	end,
+	function(self, player, formname, fields)
+		local area = self.args[1]
+		if not area then
+			return
+		end
+
+		if fields.switch then
+			company.show_company_select_dialog(player:get_player_name(), function(player2)
+				land.show_buy_to(player2:get_player_name(), unpack(self.args))
+			end)
+		end
+
+		if fields.buy then
+			if self.price ~= area.land_sale then
+				return true
+			end
+			land.buy(area, player:get_player_name())
+		end
+	end)
 
 
 company.register_panel({

@@ -45,6 +45,8 @@ minetest.register_node("land:for_sale", {
 
 		if land.can_set_price(area, pname) then
 			land.show_set_price_to(pname, area, pos)
+		elseif area.land_sale then
+			land.show_buy_to(pname, area)
 		end
 	end,
 })

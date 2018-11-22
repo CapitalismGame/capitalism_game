@@ -39,31 +39,51 @@ company.show_company_select_dialog =
 			end
 		end
 
+		local ret = context.args[1]
+
 		local name = player:get_player_name()
 		if fields.switch and context.comps then
 			local comp_name = context.comps[context.idx or 1]
 			company.set_active(name, comp_name)
-			sfinv.set_page_and_show(player, "company:company")
+			ret(player)
 		elseif not (fields.quit ~= "" or fields.back) then
-			sfinv.set_page_and_show(player, "company:company")
+			ret(player)
 			return
 		end
 	end)
 
-sfinv.register_page("company:company", {
-	title = "Company",
-	get = function(self, player, context)
-		local comp = company.get_active(player:get_player_name())
+function company.get_company_header(pname, width, mode)
+	local comp = company.get_active(pname)
 
-		-- Using an array to build a formspec is considerably faster
-		local formspec = {
+	local second = ""
+	if comp and mode == "balance" then
+		second = "Balance: " .. banking.get_balance(comp)
+	elseif comp then
+		second = "CEO: " .. comp:get_ceo_name()
+	end
+
+	return table.concat({
 			"label[0.1,0.0;",
 			minetest.formspec_escape(comp and comp.title or "No active company"),
 			"]",
 			"label[0.1,0.4;",
-			minetest.formspec_escape(comp and ("CEO: " .. comp:get_ceo_name()) or ""),
+			minetest.formspec_escape(second),
 			"]",
-			"button[6,0;2,1;switch;Switch]"
+			"button[",
+			tostring(width - 2),
+			",0;2,1;switch;Switch]",
+		}, "")
+end
+
+sfinv.register_page("company:company", {
+	title = "Company",
+	get = function(self, player, context)
+		local pname = player:get_player_name()
+		local comp  = company.get_active(pname)
+
+		-- Using an array to build a formspec is considerably faster
+		local formspec = {
+			company.get_company_header(pname, 8)
 		}
 
 		if comp then
@@ -108,7 +128,9 @@ sfinv.register_page("company:company", {
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
 		if fields.switch then
-			company.show_company_select_dialog(player:get_player_name())
+			company.show_company_select_dialog(player:get_player_name(), function(player2)
+				sfinv.set_page_and_show(player2, "company:company")
+			end)
 		end
 	end,
 })

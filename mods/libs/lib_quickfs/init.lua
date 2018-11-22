@@ -26,6 +26,8 @@ function lib_quickfs.register(name, func, cb, privs)
 			return
 		end
 
+		assert(playername, "Player name is nil!")
+
 		local context =  {
 			playername = playername,
 			args = { ... },
