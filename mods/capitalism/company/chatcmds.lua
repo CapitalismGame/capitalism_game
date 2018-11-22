@@ -1,5 +1,8 @@
 local adt = audit("company.cmd")
 
+ChatCmdBuilder.types.comp  = "(c:[a-z]+)"
+ChatCmdBuilder.types.owner = "(c?:?[a-z]+)"
+
 ChatCmdBuilder.new("company", function(cmd)
 	cmd:sub("list", function(name)
 		if #company._companies == 0 then
@@ -34,7 +37,7 @@ ChatCmdBuilder.new("company", function(cmd)
 		end
 	end)
 
-	cmd:sub("show :cname", function(name, cname)
+	cmd:sub("show :cname:comp", function(name, cname)
 		local comp = company.get_by_name(cname)
 		if not comp then
 			return false, "No company by the name '" .. cname  .. "' found"
@@ -49,7 +52,7 @@ ChatCmdBuilder.new("company", function(cmd)
 		return true, msg
 	end)
 
-	cmd:sub("use :cname", function(name, cname)
+	cmd:sub("use :cname:comp", function(name, cname)
 		if company.set_active(name, cname) then
 			return true, "You are now operating as " .. cname
 		else

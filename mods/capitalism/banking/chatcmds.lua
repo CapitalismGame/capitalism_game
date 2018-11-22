@@ -3,7 +3,7 @@ minetest.register_privilege("banking_admin", {
 })
 
 ChatCmdBuilder.new("banking", function(cmd)
-	cmd:sub("give :owner :amount:int", function(name, owner, amount)
+	cmd:sub("give :owner:owner :amount:int", function(name, owner, amount)
 		if not minetest.check_player_privs(name, { banking_admin = true }) then
 			return false, "Missing privilege: banking_admin"
 		end
@@ -19,7 +19,7 @@ ChatCmdBuilder.new("banking", function(cmd)
 		return true, "Gave " .. acc.balance .. " to " .. owner
 	end)
 
-	cmd:sub("transfer :to :amount:int :reason:text", function(name, to, amount, reason)
+	cmd:sub("transfer :to:owner :amount:int :reason:text", function(name, to, amount, reason)
 		local comp = company.get_active(name)
 		if not comp then
 			return false, "You need to select a company to operate as using /company use <name>"

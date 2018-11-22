@@ -13,7 +13,7 @@ ChatCmdBuilder.new("land", function(cmd)
 		return true, "Showed land debug form"
 	end)
 
-	cmd:sub("owner :id:int :newowner", function(name, id, newowner)
+	cmd:sub("owner :id:int :newowner:owner", function(name, id, newowner)
 		return land.transfer(id, newowner, name)
 	end)
 
