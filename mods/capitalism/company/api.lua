@@ -1,7 +1,7 @@
 _.extend(company, {
 	_companies = {},
 	_companies_by_name = {},
-	_active_companies = {}
+	_active_companies = {},
 })
 
 local adt = audit("company")
@@ -145,5 +145,15 @@ end
 if minetest then
 	local storage = minetest.get_mod_storage()
 	lib_utils.make_saveload(company, storage, "_companies", "add", company.Company)
+
+	table.insert(company.__saves, function()
+		storage:set_string("active_companies", minetest.serialize(company._active_companies))
+	end)
+
+	table.insert(company.__loads, function()
+		company._active_companies =
+			minetest.deserialize(storage:get_string("active_companies")) or {}
+	end)
+
 	company.load()
 end
