@@ -16,7 +16,7 @@ function lib_quickfs.register(name, func, cb, privs)
 		local context = player_contexts[playername]
 
 		if context and cb(context, player, formname, fields) then
-			local formspec = func(context, playername)
+			local formspec = func(context, playername, unpack(context.args))
 			minetest.show_formspec(playername, name, formspec)
 		end
 	end)

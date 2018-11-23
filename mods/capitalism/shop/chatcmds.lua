@@ -9,26 +9,6 @@ ChatCmdBuilder.new("shop", function(cmd)
 		end
 	end)
 
-	cmd:sub("register :cname", function(name, sname)
-		local obj = shop.Shop:new()
-		obj.name = sname
-
-		if #sname < 3 then
-			return false, "Shop names must be at least 3 characters"
-		end
-
-		if sname:match("%W") then
-			return false, "Shop names can only consist of letters and numbers"
-		end
-
-		if shop.register_shop(sname, obj) then
-			shop.dirty = true
-			return true, "Registered shop"
-		else
-			return false, "Unable to register shop, a shop of that name already exists"
-		end
-	end)
-
 	cmd:sub("show :cname", function(name, cname)
 		local obj = shop.get_by_name(cname)
 		if not obj then

@@ -6,4 +6,6 @@ company.permissions = {
 	BUY_LAND       = "Can buy land. Requires TRANSFER_MONEY",
 	INTERACT_AREA  = "Can build/dig/etc on company land",
 	OWNS_AREA      = "Can perform general area admin actions",
+	SHOP_CREATE    = "Can create a shop on commercial areas",
+	SHOP_ADMIN     = "Can change the settings of a shop, including prices",
 }
