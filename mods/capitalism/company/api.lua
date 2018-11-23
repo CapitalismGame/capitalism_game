@@ -86,6 +86,7 @@ function company.check_perm(pname, cname, permission, meta)
 	assert(type(cname) == "string")
 	assert(type(permission) == "string")
 	assert(company.permissions[permission])
+	assert(meta == nil or type(meta) == "table")
 
 	local comp = company.get_active(pname)
 	if not comp then

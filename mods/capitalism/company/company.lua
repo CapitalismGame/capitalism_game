@@ -52,8 +52,12 @@ function Company:can_become_active(username)
 	return self:check_perm(username, "SWITCH_TO")
 end
 
-function Company:check_perm(username, permission)
+function Company:check_perm(username, permission, meta)
+	assert(type(username) == "string")
+	assert(type(permission) == "string")
 	assert(company.permissions[permission])
+	assert(meta == nil or type(meta) == "table")
+
 	-- TODO: permissions
 	return self:get_ownership(username) > 0
 end
