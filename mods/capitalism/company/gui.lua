@@ -1,6 +1,7 @@
-company.show_company_select_dialog =
-	lib_quickfs.register("company:set_company", function(context, name)
-		local comps   = company.get_companies_for_player(name)
+company.show_company_select_dialog = lib_quickfs.register("company:set_company", {
+	get = function(context, player)
+		local pname   = player:get_player_name()
+		local comps   = company.get_companies_for_player(pname)
 		context.comps = _.map(comps, function(comp)
 			return comp.name
 		end)
@@ -17,7 +18,7 @@ company.show_company_select_dialog =
 				"label[0,-0.1;Select a Company]",
 				"textlist[-0.1,0.5;4,4;companies;",
 				table.concat(_.map(comps, function(comp)
-					if comp:get_ceo_name() == name then
+					if comp:get_ceo_name() == pname then
 						return minetest.formspec_escape(comp.title)
 					else
 						return minetest.formspec_escape(minetest.colorize("#c0c0c0", comp.name))
@@ -31,7 +32,8 @@ company.show_company_select_dialog =
 
 		return table.concat(formspec, "")
 	end,
-	function(context, player, formname, fields)
+
+	on_receive_fields = function(context, player, fields)
 		if fields.companies then
 			local evt = minetest.explode_textlist_event(fields.companies)
 			if evt.type == "CHG" then
@@ -50,7 +52,8 @@ company.show_company_select_dialog =
 			ret(player)
 			return
 		end
-	end)
+	end,
+})
 
 function company.get_company_header(pname, width, mode)
 	local comp = company.get_active(pname)

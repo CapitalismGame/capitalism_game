@@ -8,10 +8,12 @@ function shop.show_shop_form(pname, pos)
 end
 
 
-shop.show_admin_form = lib_quickfs.register("shop:counter_admin", function(context, pname, pos)
-		assert(shop.can_admin(pname, pos))
+shop.show_admin_form = lib_quickfs.register("shop:counter_admin", {
+	check = function(context, player, pos)
+		return shop.can_admin(player:get_player_name(), pos)
+	end,
 
-
+	get = function(context, player, pos)
 		local s = shop.get_by_pos(pos)
 		assert(s)
 
@@ -26,8 +28,8 @@ shop.show_admin_form = lib_quickfs.register("shop:counter_admin", function(conte
 			"table[0,1;4.8,6;list_items;",
 			"#999,Description,Stock,Price,Sales",
 		}
-		-- Description Stock PricePI Sold
 
+		-- Description Stock PricePI Sold
 
 		local items_kv = s:get_items()
 		local items    = {}
@@ -87,7 +89,8 @@ shop.show_admin_form = lib_quickfs.register("shop:counter_admin", function(conte
 
 		return table.concat(fs, "")
 	end,
-	function(context, player, formname, fields)
+
+	on_receive_fields = function(context, player, fields, pos)
 		if fields.list_items then
 			local evt =  minetest.explode_table_event(fields.list_items)
 			context.selected = evt.row - 1
@@ -102,10 +105,18 @@ shop.show_admin_form = lib_quickfs.register("shop:counter_admin", function(conte
 			shop.dirty = true
 			return true
 		end
-	end)
+	end,
+})
 
 
-shop.show_chest_form = lib_quickfs.register("shop:chest", function(context, pname, s, pos)
+shop.show_chest_form = lib_quickfs.register("shop:chest", {
+	check = function(context, player, s, pos)
+		local area = land.get_by_pos(pos)
+		return area and company.check_perm(context.pname, area.owner,
+				"SHOP_CHEST", { area = area })
+	end,
+
+	get = function(context, player, s, pos)
 		local inv = minetest.get_inventory({ type = "node", pos = pos })
 		s:chest_poll(pos, inv)
 
@@ -143,7 +154,8 @@ shop.show_chest_form = lib_quickfs.register("shop:chest", function(context, pnam
 
 		return table.concat(fs, "")
 	end,
-	function(context, player, formname, fields)
+
+	on_receive_fields = function(context, player, fields)
 		if fields.unassign then
 			local s     = context.args[1]
 			local pos   = context.args[2]
@@ -156,4 +168,5 @@ shop.show_chest_form = lib_quickfs.register("shop:chest", function(context, pnam
 			shop.show_admin_form(player:get_player_name(), context.args[2])
 			return false
 		end
-	end)
+	end,
+})

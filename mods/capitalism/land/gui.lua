@@ -25,7 +25,10 @@ local function build_list()
 end
 
 
-land.show_debug_to = lib_quickfs.register("land:debug", function(self, playername)
+land.show_debug_to = lib_quickfs.register("land:debug", {
+	privs = { land_admin = true },
+
+	get = function(context, player)
 		local fs = {
 			"size[7,6]",
 			"tablecolumns[color;tree;text,width=10;text]",
@@ -34,12 +37,12 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 		}
 
 		local list = build_list()
-		self.list = list
+		context.list = list
 
-		if not self.selected then
-			self.selected = 1
-		elseif self.selected > #list then
-			self.selected = #list
+		if not context.selected then
+			context.selected = 1
+		elseif context.selected > #list then
+			context.selected = #list
 		end
 
 		for i=1, #list do
@@ -74,13 +77,13 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 		end
 
 		fs[#fs + 1] = ";"
-		if self.selected then
-			fs[#fs + 1] = tostring(self.selected)
+		if context.selected then
+			fs[#fs + 1] = tostring(context.selected)
 		end
 		fs[#fs + 1] = "]"
 
-		if self.selected then
-			-- local area = list[self.selected]
+		if context.selected then
+			-- local area = list[context.selected]
 			-- fs[#fs + 1] = "box[5,1;1.8,0.8;#222]"
 			fs[#fs + 1] = "button[5,0;2,1;to_comm;Commercial]"
 			fs[#fs + 1] = "button[5,1;2,1;to_inds;Industrial]"
@@ -95,10 +98,11 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 
 		return table.concat(fs, "")
 	end,
-	function(self, player, formname, fields)
+
+	on_receive_fields = function(context, player, fields)
 		if fields["list_areas"] then
 			local evt =  minetest.explode_table_event(fields["list_areas"])
-			self.selected = evt.row
+			context.selected = evt.row
 			return true
 		end
 
@@ -112,13 +116,13 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 		end
 
 		local function do_set(type)
-			do_set_list({ self.list[self.selected] }, type)
+			do_set_list({ context.list[context.selected] }, type)
 			areas:save()
 
 			return true
 		end
 
-		if self.selected then
+		if context.selected then
 			if fields.to_comm then
 				return do_set("commercial")
 			elseif fields.to_inds then
@@ -126,15 +130,20 @@ land.show_debug_to = lib_quickfs.register("land:debug", function(self, playernam
 			elseif fields.to_resd then
 				return do_set("residential")
 			elseif fields.unzone then
-				local area = self.list[self.selected]
+				local area = context.list[context.selected]
 				land.remove_zone(area.id)
 				return true
 			end
 		end
-	end, { land_admin = true })
+	end,
+})
 
-land.show_set_price_to = lib_quickfs.register("land:set_price", function(self, playername)
-		local area = self.args[1]
+land.show_set_price_to = lib_quickfs.register("land:set_price", {
+	check = function(context, player, area)
+		return land.can_set_price(area, player:get_player_name())
+	end,
+
+	get = function(context, player, area)
 		assert(area.owner and area.pos2)
 		local fs = {
 			"size[3,2]",
@@ -144,26 +153,28 @@ land.show_set_price_to = lib_quickfs.register("land:set_price", function(self, p
 
 		return table.concat(fs, "")
 	end,
-	function(self, player, formname, fields)
-		local area = self.args[1]
-		if not area then
-			return
-		end
 
+	on_receive_fields = function(context, player, fields, area)
 		if fields.set then
 			land.set_price(area, player:get_player_name(),
 					tonumber(fields.price) or 100000)
 		end
-	end)
+	end,
+})
 
 
-land.show_buy_to = lib_quickfs.register("land:set_price", function(self, pname)
-		local area = self.args[1]
+land.show_buy_to = lib_quickfs.register("land:buy", {
+	check = function(context, player, area)
+		return area ~= nil
+	end,
+
+	get = function(context, player, area)
+		local pname = context.pname
 		assert(area.owner and area.pos2)
 		assert(area.land_sale)
 
-		local price_changed = self.price and self.price ~= area.land_sale
-		self.price = area.land_sale
+		local price_changed = context.price and context.price ~= area.land_sale
+		context.price = area.land_sale
 
 		local fs = {
 			"size[5,2.4]",
@@ -189,25 +200,22 @@ land.show_buy_to = lib_quickfs.register("land:set_price", function(self, pname)
 
 		return table.concat(fs, "")
 	end,
-	function(self, player, formname, fields)
-		local area = self.args[1]
-		if not area then
-			return
-		end
 
+	on_receive_fields = function(context, player, fields, area)
 		if fields.switch then
 			company.show_company_select_dialog(player:get_player_name(), function(player2)
-				land.show_buy_to(player2:get_player_name(), unpack(self.args))
+				land.show_buy_to(player2:get_player_name(), unpack(context.args))
 			end)
 		end
 
 		if fields.buy then
-			if self.price ~= area.land_sale then
+			if context.price ~= area.land_sale then
 				return true
 			end
 			land.buy(area, player:get_player_name())
 		end
-	end)
+	end,
+})
 
 
 company.register_panel({
