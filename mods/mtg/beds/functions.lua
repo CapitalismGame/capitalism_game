@@ -137,7 +137,7 @@ end
 
 function beds.on_rightclick(pos, player)
 	local name = player:get_player_name()
-	local ppos = player:getpos()
+	local ppos = player:get_pos()
 	local tod = minetest.get_timeofday()
 
 	if tod > 0.2 and tod < 0.805 then

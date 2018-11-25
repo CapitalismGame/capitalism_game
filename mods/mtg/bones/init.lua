@@ -197,7 +197,7 @@ minetest.register_on_dieplayer(function(player)
 		return
 	end
 
-	local pos = vector.round(player:getpos())
+	local pos = vector.round(player:get_pos())
 	local player_name = player:get_player_name()
 
 	-- check if it's possible to place bones, if not find space near player

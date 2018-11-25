@@ -38,8 +38,39 @@ Permissions can be granted by the CEO of a company to other
 players at any time. This is done as part of the player tab
 in the inventory formspec.
 
-## Common Variable Names
+You can see a list of permissions and their meaning in
+mods/capitalism/company/permissions.lua
+
+## Data Persistence
+
+There's a helper available to save and load arrays of classes:
+
+```lua
+if minetest then
+	local storage = minetest.get_mod_storage()
+	lib_utils.make_saveload(company, storage, "_companies", "add", company.Company)
+	company.load()
+end
+```
+
+make_saveload parameters:
+
+* **tab** - The mod's table.
+* **storage** - ModStorageRef
+* **itemarraykey** - Key for the table of object, `tab[itemarraykey]`.
+* **regkey** - The add function, `tab[regkey]`.  Returns true on success.
+* **class** - a reference to the class. Must have:
+	* `:new()` with metatables and initialisation
+	* from_table(), returns true if successful
+	* to_table(), returns table
+
+## Conventions
+
+### Common Variable Names
 
 * `name` - player name
 * `comp` - company
 * `cname` - company name
+* `pname` - player name
+* `area` - an *areas* area
+* `acc` - bank account

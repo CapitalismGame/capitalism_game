@@ -6,6 +6,7 @@ exclude_files = {"mods/mtg", "mods/libs/lib_chatcmdbuilder", "mods/areas"}
 globals = {
     "minetest", "company",
     "areas", "sfinv",
+    "shop",
     ChatCmdBuilder = {fields = {"types"}}
 }
 

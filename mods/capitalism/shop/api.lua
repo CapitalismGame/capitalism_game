@@ -71,6 +71,27 @@ function shop.create_shop(pname, pos)
 	return true
 end
 
+function shop.unassign_chest(s, pos, inv)
+	local chest = s:get_chest(pos)
+	if chest.itemname then
+		local stack = ItemStack(chest.itemname)
+		stack:set_count(chest.count)
+
+		if inv and inv:room_for_item("main", stack) then
+			inv:add_item("main", stack)
+		end
+
+		local node_inv  = minetest.get_inventory({ type = "node", pos = pos })
+		node_inv:set_list("main", {})
+
+		local new = s:get_item_or_make(chest.itemname)
+		new.stock = new.stock - chest.count
+	end
+
+	chest.itemname = nil
+	chest.count    = 0
+end
+
 -- Minetest won't be available in tests
 if minetest then
 	local storage = minetest.get_mod_storage()
