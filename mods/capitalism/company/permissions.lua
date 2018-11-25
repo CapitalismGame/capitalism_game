@@ -9,4 +9,5 @@ company.permissions = {
 	SHOP_CREATE    = "Can create a shop on commercial areas",
 	SHOP_ADMIN     = "Can change the settings of a shop, including prices",
 	SHOP_CHEST     = "Can place, modify shop chests",
+	BUY_ITEMS      = "Can buy from shops",
 }

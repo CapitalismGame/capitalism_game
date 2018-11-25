@@ -67,6 +67,21 @@ function Shop:get_chest(pos)
 	return self.chests[posstr]
 end
 
+function Shop:get_chests_for_item(name, count, filter)
+	local ret = {}
+	for _, chest in pairs(self.chests) do
+		if chest.itemname == name and chest.count > 0 and (not filter or filter(chest)) then
+			count = count - chest.count
+			ret[#ret + 1] = chest
+			if count <= 0 then
+				return ret
+			end
+		end
+	end
+
+	return nil
+end
+
 function Shop:chest_poll(pos, inv)
 	local chest = self:get_chest(pos)
 	assert(chest)

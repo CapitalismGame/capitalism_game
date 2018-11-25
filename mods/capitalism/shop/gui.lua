@@ -2,8 +2,7 @@ function shop.show_shop_form(pname, pos)
 	if shop.can_admin(pname, pos) then
 		shop.show_admin_form(pname, pos)
 	else
-		minetest.chat_send_player(pname, "Shop checkout unimplemented")
-		-- shop.show_shop_checkout_form(playername, pos)
+		shop.show_customer_form(pname, pos)
 	end
 end
 
@@ -167,6 +166,139 @@ shop.show_chest_form = lib_quickfs.register("shop:chest", {
 		if fields.overview then
 			shop.show_admin_form(player:get_player_name(), context.args[2])
 			return false
+		end
+	end,
+})
+
+
+shop.show_customer_form = lib_quickfs.register("shop:customer", {
+	get = function(context, player, pos)
+		local s = shop.get_by_pos(pos)
+		assert(s)
+
+		local fs = {
+			"size[8,9.25]",
+			company.get_company_header(context.pname, 8, "balance"),
+			"label[4,1;",
+			minetest.formspec_escape(s.name),
+			"]",
+			"tablecolumns[color;text;text;text]",
+			"list[current_player;main;0,5.25;8,1;]",
+			"list[current_player;main;0,6.48;8,3;8]",
+			default.get_hotbar_bg(0, 5.25),
+			"table[0,1;5.8,4;list_items;",
+			"#999,Description,Stock,Price",
+		}
+
+		-- Description Stock PricePI Sold
+
+		local items_kv = s:get_items()
+		local items    = {}
+		context.items  = items
+		for _, item in pairs(items_kv) do
+			if item.price >= 0 then
+				local def  = minetest.registered_items[item.name] or {}
+				local desc = def.description or item.name
+
+				items[#items + 1] = item
+
+				fs[#fs + 1] = ",,"
+				fs[#fs + 1] = desc
+				fs[#fs + 1] = ","
+				fs[#fs + 1] = item.stock
+				fs[#fs + 1] = ","
+				fs[#fs + 1] = item.price
+			end
+		end
+
+		if next(items) and not context.selected then
+			context.selected = 1
+		end
+
+		if context.selected then
+			if context.selected > #items then
+				 context.selected = #items
+			end
+
+			if context.selected and context.selected > 0 then
+				fs[#fs + 1] = ";"
+				fs[#fs + 1] = tostring(context.selected + 1)
+			end
+		end
+
+		fs[#fs + 1] = "]"
+
+		if context.selected and context.selected > 0 then
+			local item = items[context.selected]
+			local suc, msg = shop.can_buy(pos, context.pname, item.name, 0, 0)
+			if suc then
+				fs[#fs + 1] = "field[6.3,1.3;2,1;num;;"
+				fs[#fs + 1] = tostring(context.num or 1)
+				fs[#fs + 1] = "]"
+				fs[#fs + 1] = "button[6,2;2,1;buyn;Buy]"
+			else
+				fs[#fs + 1] = "box[6,1;1.8,0.8;#f00]"
+				fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
+				fs[#fs + 1] = "label[6,1;"
+				fs[#fs + 1] = minetest.formspec_escape(msg)
+				fs[#fs + 1] = "]"
+			end
+
+			if context.error then
+				fs[#fs + 1] = "box[6,3;1.8,0.8;#f00]"
+				fs[#fs + 1] = "label[6,3;"
+				fs[#fs + 1] = minetest.formspec_escape(context.error)
+				fs[#fs + 1] = "]"
+			else
+				fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
+			end
+			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
+		else
+			fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
+		end
+
+		return table.concat(fs, "")
+	end,
+
+	on_receive_fields = function(context, player, fields, pos)
+		if fields.switch then
+			company.show_company_select_dialog(context.pname, function(player2)
+				shop.show_customer_form(player2:get_player_name(), unpack(context.args))
+			end)
+			return
+		end
+
+		if fields.list_items then
+			local evt =  minetest.explode_table_event(fields.list_items)
+			context.selected = evt.row - 1
+			return true
+		end
+
+		if fields.num then
+			context.num = tonumber(fields.num) or 1
+		end
+
+		if fields.buyn then
+			local item  = context.items[context.selected]
+			if item then
+				local count = tonumber(fields.num)
+				if not count then
+					context.error = "Not a number!"
+					return true
+				end
+
+				local _, msg = shop.buy(pos, context.pname, item, count)
+				if msg then
+					context.error = msg
+				else
+					context.error = nil
+				end
+				return true
+			end
+			return true
 		end
 	end,
 })
