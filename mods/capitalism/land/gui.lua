@@ -151,7 +151,8 @@ land.show_set_price_to = lib_quickfs.register("land:set_price", function(self, p
 		end
 
 		if fields.set then
-			land.set_price(area, player:get_player_name(), tonumber(fields.price))
+			land.set_price(area, player:get_player_name(),
+					tonumber(fields.price) or 100000)
 		end
 	end)
 
