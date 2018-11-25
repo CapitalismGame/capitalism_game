@@ -141,6 +141,26 @@ ChatCmdBuilder.new("company", function(cmd)
 
 		return company.set_perms(comp, name, username, permission:upper(), false)
 	end)
+
+	cmd:sub("perms", function(name)
+		local comp = company.get_active(name)
+
+		local msg = ""
+		for key, value in pairs(company.permissions) do
+			local color
+			if not comp then
+				color = "#bef"
+			elseif comp:check_perm(name, key) then
+				color = "#bfb"
+			else
+				color = "#fbb"
+			end
+
+			msg = msg .. minetest.colorize(color, key .. ": ") .. value .. "\n"
+		end
+		return true, msg
+	end)
+
 end, {
 	description = "Company tools"
 })
