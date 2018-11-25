@@ -76,7 +76,7 @@ describe("banking", function()
 
 		local comp = company.Company:new()
 		comp:set_title_calc_name("Two")
-		comp.owner = "testuser"
+		comp.ceo = "testuser"
 		company.add(comp)
 
 		assert.is_false(banking.transfer("a", "c:two", "c:test", 10, nil))

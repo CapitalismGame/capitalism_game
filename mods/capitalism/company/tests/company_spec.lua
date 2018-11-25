@@ -10,12 +10,12 @@ local Company = company.Company
 describe("company.Company", function()
 	it("constructs", function()
 		local company = Company:new()
-		assert.is_nil(company.owner)
+		assert.is_nil(company.ceo)
 	end)
 
 	it("has ownership", function()
 		local company = Company:new()
-		company.owner = "foobar"
+		company.ceo = "foobar"
 		assert.equals(company:get_ownership("foobar"),     1)
 		assert.equals(company:get_ownership("foobarasas"), 0)
 		assert.equals(company:get_ownership("a"),          0)
@@ -26,21 +26,21 @@ describe("company.Company", function()
 
 	it("has ceo", function()
 		local company = Company:new()
-		company.owner = "foobar"
+		company.ceo = "foobar"
 		assert.equals(company:get_ceo_name(), "foobar")
 	end)
 
 	it("can become active", function()
 		local company = Company:new()
 		assert.is_false(company:can_become_active("foobar"))
-		company.owner = "foobar"
+		company.ceo = "foobar"
 		assert.is_true (company:can_become_active("foobar"))
 		assert.is_false(company:can_become_active("sdsddd"))
 	end)
 
 	it("has permissions", function()
 		local company = Company:new()
-		company.owner = "foobar"
+		company.ceo = "foobar"
 		assert.is_true (company:check_perm("foobar", "SWITCH_TO"))
 		assert.is_false(company:check_perm("sdsddd", "SWITCH_TO"))
 	end)

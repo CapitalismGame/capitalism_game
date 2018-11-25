@@ -127,6 +127,50 @@ function company.get_companies_for_player(pname)
 	return comps
 end
 
+function company.set_perms(comp, actor, target, permission, is_grant)
+	if not comp:check_perm(actor, "MANAGE_MEMBERS",
+			{ action = "add", name = "username" }) then
+		return false, "Missing permission: MANAGE_MEMBERS"
+	end
+
+	if target == comp:get_ceo_name() then
+		if is_grant then
+			return false, "The CEO already has all permissions"
+		else
+			return false, "Permissions cannot be revoked from the CEO"
+		end
+	end
+
+	permission = permission:upper()
+	if permission ~= "ALL" and not company.permissions[permission] then
+		return false, "Unknown permission " .. permission
+	end
+
+	local member = comp.members[target]
+	if not member then
+		return false, target .. " is not a member of " .. comp.title
+	end
+
+	if permission == "ALL" then
+		for key in pairs(company.permissions) do
+			member.perms[key] = is_grant
+		end
+	else
+		member.perms[permission] = is_grant
+	end
+
+	company.dirty = true
+
+	local perms = {}
+	for key, value in pairs(member.perms) do
+		if value then
+			perms[#perms + 1] = key
+		end
+	end
+
+	return true, "Permissions: " .. table.concat(perms, ", ")
+end
+
 company.registered_on_creates = {}
 function company.register_on_create(func)
 	assert(type(func) == "function")

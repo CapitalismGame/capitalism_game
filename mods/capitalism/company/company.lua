@@ -5,7 +5,8 @@ function Company:new(obj)
 	obj = obj or {}
 	setmetatable(obj, self)
 	self.__index = self
-	self.owner   = nil
+	self.ceo     = nil
+	self.members = {}
 	return obj
 end
 
@@ -14,7 +15,8 @@ function Company:to_table()
 	return {
 		title   = self.title,
 		name    = self.name,
-		owner   = self.owner
+		ceo     = self.ceo,
+		members = self.members,
 	}
 end
 
@@ -24,8 +26,9 @@ function Company:from_table(t)
 	if self.name:sub(1, 2) ~= "c:" then
 		self.name = "c:" .. self.name
 	end
-	self.owner   = t.owner
-	return self.name ~= nil and self.owner ~= nil
+	self.ceo     = t.ceo or t.owner
+	self.members = t.members or {}
+	return self.name ~= nil and self.ceo ~= nil and type(self.members) == "table"
 end
 
 function Company:set_title_calc_name(title)
@@ -36,12 +39,12 @@ function Company:set_title_calc_name(title)
 end
 
 function Company:get_ceo_name()
-	return self.owner
+	return self.ceo
 end
 
 function Company:get_ownership(username)
 	-- TODO: ownership
-	if self.owner == username then
+	if self.ceo == username then
 		return 1
 	else
 		return 0
@@ -58,8 +61,26 @@ function Company:check_perm(username, permission, meta)
 	assert(company.permissions[permission])
 	assert(meta == nil or type(meta) == "table")
 
-	-- TODO: permissions
-	return self:get_ownership(username) > 0
+	if self.ceo == username then
+		return true
+	end
+
+	local member = self.members[username]
+	return member and member.perms[permission] and true or false
+end
+
+function Company:add_member(username)
+	assert(not self.members[username])
+
+	local mem = {
+		perms = {
+			SWITCH_TO = true,
+			INTERACT_AREA = true,
+		},
+	}
+
+	self.members[username] = mem
+	return mem
 end
 
 function Company:is_government()

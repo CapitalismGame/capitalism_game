@@ -218,6 +218,67 @@ land.show_buy_to = lib_quickfs.register("land:buy", {
 })
 
 
+sfinv.register_page("land:places", {
+	title = "Places",
+	get = function(self, player, context)
+		local pname = player:get_player_name()
+		local comp  = company.get_active(pname)
+
+		-- Using an array to build a formspec is considerably faster
+		local formspec = {
+			company.get_company_header(pname, 8)
+		}
+
+		if comp then
+			local i = 0
+			for _, panel in pairs(company.registered_panels) do
+				if not panel.show_to or panel:show_to(player, comp, context) then
+					formspec[#formspec + 1] = "container["
+					formspec[#formspec + 1] = tostring((i % 2) * 4)
+					formspec[#formspec + 1] = ","
+					formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2 + 1)
+					formspec[#formspec + 1] = ".3]"
+
+					formspec[#formspec + 1] = "label[1.5,-0.3;"
+					formspec[#formspec + 1] = panel.title
+					formspec[#formspec + 1] = "]"
+
+					formspec[#formspec + 1] = "box[0,-0.3;3.8,1.8;"
+					formspec[#formspec + 1] = panel.bgcolor
+					formspec[#formspec + 1] = "]"
+
+					formspec[#formspec + 1] = panel:get(player, comp, context)
+					formspec[#formspec + 1] = "container_end[]"
+
+					i = i + 1
+				end
+			end
+
+			while i < 2*4 do
+				formspec[#formspec + 1] = "box["
+				formspec[#formspec + 1] = tostring((i % 2) * 4)
+				formspec[#formspec + 1] = ","
+				formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2 + 1)
+				formspec[#formspec + 1] = ";3.8,1.8;#111]"
+
+				i = i + 1
+			end
+		end
+
+		-- Wrap the formspec in sfinv's layout (ie: adds the tabs and background)
+		return sfinv.make_formspec(player, context,
+				table.concat(formspec, ""), false)
+	end,
+	on_player_receive_fields = function(self, player, context, fields)
+		if fields.switch then
+			company.show_company_select_dialog(player:get_player_name(), function(player2)
+				sfinv.set_page_and_show(player2, "company:company")
+			end)
+		end
+	end,
+})
+
+
 company.register_panel({
 	title = "Land",
 	bgcolor = "#A0522D",

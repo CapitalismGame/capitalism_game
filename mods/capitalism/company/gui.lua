@@ -21,7 +21,7 @@ company.show_company_select_dialog = lib_quickfs.register("company:set_company",
 					if comp:get_ceo_name() == pname then
 						return minetest.formspec_escape(comp.title)
 					else
-						return minetest.formspec_escape(minetest.colorize("#c0c0c0", comp.name))
+						return minetest.formspec_escape(minetest.colorize("#c0c0c0", comp.title))
 					end
 				end), ","),
 				";1;false]",
@@ -151,10 +151,15 @@ company.register_panel({
 })
 
 company.register_panel({
-	title = "Employees",
+	title = "Members",
 	bgcolor = "#396",
-	get = function(_, _, _, _)
-		return "label[0.2,0.2;0 employees.]"
+	get = function(_, _, comp, _)
+		local memcount       = 0
+		for username, props in pairs(comp.members) do
+			memcount = memcount + 1
+		end
+
+		return "label[0.2,0.2;" .. memcount .. " members]"
 	end,
 })
 

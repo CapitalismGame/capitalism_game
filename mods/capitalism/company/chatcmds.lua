@@ -2,6 +2,7 @@ local adt = audit("company.cmd")
 
 ChatCmdBuilder.types.comp  = "(c:[a-z]+)"
 ChatCmdBuilder.types.owner = "(c?:?[a-z]+)"
+ChatCmdBuilder.types.alpha = "([A-Za-z_]+)"
 
 ChatCmdBuilder.new("company", function(cmd)
 	cmd:sub("list", function(name)
@@ -17,7 +18,7 @@ ChatCmdBuilder.new("company", function(cmd)
 	cmd:sub("register :title:text", function(name, title)
 		local comp = company.Company:new()
 		comp:set_title_calc_name(title)
-		comp.owner = name
+		comp.ceo = name
 
 		if #title < 3 then
 			return false, "Company names must be at least 3 characters"
@@ -58,6 +59,87 @@ ChatCmdBuilder.new("company", function(cmd)
 		else
 			return false, "No company by the name '" .. cname  .. "' found"
 		end
+	end)
+
+	cmd:sub("member :username:username", function(name, username)
+		local comp = company.get_active(name)
+		if not comp then
+			return false, "Select a company by doing  /company use <NAME>"
+		end
+
+		if comp:get_ceo_name() == username then
+			return false, username .. " is the CEO of " .. comp.title
+		end
+
+		local member = comp.members[username]
+		if not member then
+			return false, username .. " is not a member of " .. comp.title
+		end
+
+		local perms = {}
+		for key, value in pairs(member.perms) do
+			if value then
+				perms[#perms + 1] = key
+			end
+		end
+
+		return true, username .. " is a member of " .. comp.title ..
+				"\nPermissions: " .. table.concat(perms, ", ")
+	end)
+
+	cmd:sub("add :username:username", function(name, username)
+		local comp = company.get_active(name)
+		if not comp then
+			return false, "Select a company by doing  /company use <NAME>"
+		end
+
+		if not comp:check_perm(name, "MANAGE_MEMBERS",
+				{ action = "add", name = "username" }) then
+			return false, "Missing permission: MANAGE_MEMBERS"
+		end
+
+		if comp:get_ceo_name() == username then
+			return false, username .. " is the CEO of " .. comp.title
+		end
+
+		if comp.members[username] then
+			return false, username .. " is already a member of " .. comp.title
+		end
+
+		if not minetest.player_exists(username) then
+			return false, username .. " doesn't exist"
+		end
+
+		local member = comp:add_member(username)
+		company.dirty = true
+
+		local perms = {}
+		for key, value in pairs(member.perms) do
+			if value then
+				perms[#perms + 1] = key
+			end
+		end
+
+		return true, "Added " .. username .. " to " .. comp.title ..
+				"\nPermissions: " .. table.concat(perms, ", ")
+	end)
+
+	cmd:sub("grant :username:username :permission:alpha", function(name, username, permission)
+		local comp = company.get_active(name)
+		if not comp then
+			return false, "Select a company by doing  /company use <NAME>"
+		end
+
+		return company.set_perms(comp, name, username, permission:upper(), true)
+	end)
+
+	cmd:sub("revoke :username:username :permission:alpha", function(name, username, permission)
+		local comp = company.get_active(name)
+		if not comp then
+			return false, "Select a company by doing  /company use <NAME>"
+		end
+
+		return company.set_perms(comp, name, username, permission:upper(), false)
 	end)
 end, {
 	description = "Company tools"
