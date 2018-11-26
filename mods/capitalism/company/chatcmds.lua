@@ -2,7 +2,6 @@ local adt = audit("company.cmd")
 
 ChatCmdBuilder.types.comp  = "(c:[a-z]+)"
 ChatCmdBuilder.types.owner = "(c?:?[a-z]+)"
-ChatCmdBuilder.types.alpha = "([A-Za-z_]+)"
 
 ChatCmdBuilder.new("company", function(cmd)
 	cmd:sub("list", function(name)
