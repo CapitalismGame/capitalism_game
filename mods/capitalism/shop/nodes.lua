@@ -54,8 +54,7 @@ chest_template = {
 		local pname = player:get_player_name()
 		if not can_interact_with_chest(player, pos) then
 			minetest.chat_send_player(pname,
-					"You don't have permission to do that!\n" ..
-					"Go to the counter/till to purchase items")
+				"You don't have permission to do that! (Are you acting as the right company?)")
 			minetest.set_node(pos, { name = "air" })
 			return false
 		end
@@ -106,7 +105,8 @@ chest_template = {
 		local pname = clicker:get_player_name()
 		if not can_interact_with_chest(clicker, pos) then
 			minetest.chat_send_player(pname,
-				"You don't have permission to do that! (Are you acting as the right company?)")
+					"You don't have permission to do that!\n" ..
+					"Go to the counter/till to purchase items")
 			return itemstack
 		end
 
