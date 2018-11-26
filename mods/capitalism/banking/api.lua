@@ -69,5 +69,6 @@ company.register_on_create(function(comp)
 	local acc = banking.Account:new()
 	assert(comp.name:sub(1, 2) == "c:")
 	acc.owner = comp.name
+	acc.balance = 10000
 	banking.add_account(acc)
 end)
