@@ -22,8 +22,18 @@ minetest.register_node("land:for_sale", {
 		local pname = player and player:get_player_name()
 		local area = land.get_by_pos(pos)
 
+		if area.land_sale then
+			minetest.remove_node(pos)
+			if pname then
+				minetest.chat_send_player(pname, "Land already for sale!")
+			end
+			return
+		end
+
 		local suc, msg = land.set_price(area, pname, 1000000)
 		if suc then
+			area.land_postpos = vector.new(pos)
+
 			minetest.set_node(vector.add(pos, {x=0,y=1,z=0}),
 				{ name = "land:for_sale_top" })
 		else
@@ -42,6 +52,14 @@ minetest.register_node("land:for_sale", {
 		local area  = land.get_by_pos(pos)
 		local pname = player:get_player_name()
 		assert(area)
+
+		if not area.land_sale then
+			minetest.remove_node(pos)
+			minetest.remove_node(vector.add(pos, {x=0,y=1,z=0}))
+			return
+		end
+
+		area.land_postpos = vector.new(pos)
 
 		if land.can_set_price(area, pname) then
 			land.show_set_price_to(pname, area, pos)
@@ -76,7 +94,8 @@ minetest.register_node("land:for_sale_top", {
 	groups = {immortal=1,not_in_creative_inventory=1},
 
 	on_rightclick = function(pos, ...)
-		local below = minetest.get_node(vector.subtract(pos, {x=0,y=1,z=0}))
+		pos = vector.subtract(pos, {x=0,y=1,z=0})
+		local below = minetest.get_node(pos)
 		assert(below.name == "land:for_sale")
 
 		return for_sale_def.on_rightclick(pos, ...)

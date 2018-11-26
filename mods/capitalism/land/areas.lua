@@ -1,6 +1,7 @@
 areas:registerOnAdd(function(id, area)
 	local parent = areas.areas[area.parent] or {}
 	area.land_type = parent.land_type
+	area.owner = "c:government"
 	areas:save()
 end)
 

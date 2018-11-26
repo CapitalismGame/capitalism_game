@@ -120,7 +120,7 @@ function land.transfer(id, newowner, pname)
 		end
 	end
 
-	adt:post(pname, comp.name, "Transferred area id=" .. id .. " to " .. newowner)
+	adt:post(pname, comp and comp.name, "Transferred area id=" .. id .. " to " .. newowner)
 
 	area.owner = newowner
 	areas:save()
@@ -136,6 +136,10 @@ function land.can_set_price(area, pname)
 	local comp = company.get_by_name(area.owner)
 	if not comp or not comp:is_government() then
 		return false, "Only the government is currently able to sell land."
+	end
+
+	if not area.parent then
+		return false, "Root land is not sellable"
 	end
 
 	local comp_active = pname and company.get_active(pname)
@@ -183,6 +187,14 @@ function land.can_buy(area, pname, comp)
 		return false, "Missing permission: BUY_LAND"
 	end
 
+	if not area.parent then
+		return false, "Unable to buy root areas"
+	end
+
+	if area.owner == comp.name then
+		return false, "You already own this land!"
+	end
+
 	local acc = banking.get_by_owner(comp and comp.name or pname)
 	if not acc then
 		return false, "You don't have a bank account"
@@ -219,8 +231,15 @@ function land.buy(area, pname)
 	adt:post(pname, comp,
 			"Bought land id=" .. area.id .. " from " .. owner_account.owner)
 
+	if minetest.get_node(area.land_postpos).name == "land:for_sale" then
+		minetest.remove_node(area.land_postpos)
+		minetest.remove_node(vector.add(area.land_postpos, {x=0,y=1,z=0}))
+		area.land_postpos = nil
+	end
+
 	area.land_sale = nil
 	area.owner     = comp and comp.name or pname
 	areas:save()
+
 	return true
 end

@@ -71,6 +71,10 @@ ChatCmdBuilder.new("company", function(cmd)
 			return false, username .. " is the CEO of " .. comp.title
 		end
 
+		if not minetest.player_exists(username) then
+			return false, username .. " doesn't exist"
+		end
+
 		local member = comp.members[username]
 		if not member then
 			return false, username .. " is not a member of " .. comp.title

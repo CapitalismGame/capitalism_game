@@ -6,7 +6,7 @@ function audit.make(_, area)
 	function ret:post(username, comp, message)
 		local cname = comp
 		if type(cname) ~= "string" then
-			cname = comp.name
+			cname = comp and comp.name or "?"
 		end
 
 		minetest.log("action", "[" .. area .. "] " .. cname .. "/" .. username .. ": " .. message)

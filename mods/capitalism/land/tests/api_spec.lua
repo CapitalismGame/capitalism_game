@@ -127,6 +127,13 @@ describe("land", function()
 		assert.is_nil(area.land_sale)
 		suc, msg = land.set_price(area, "foobar", 100)
 		assert.is_false(suc)
+		assert.is_not_nil(msg:match("Root land is not sellable"))
+
+		area.parent = 3
+
+		assert.is_nil(area.land_sale)
+		suc, msg = land.set_price(area, "foobar", 100)
+		assert.is_false(suc)
 		assert.is_not_nil(msg:match("do not own"))
 
 		assert.is_nil(area.land_sale)
