@@ -169,14 +169,17 @@ land.show_buy_to = lib_quickfs.register("land:buy", {
 		local price_changed = context.price and context.price ~= area.land_sale
 		context.price = area.land_sale
 
+		local summary = area.name .. "\nFor sale by: " .. area.owner
+
 		local fs = {
-			"size[5,2.4]",
-			company.get_company_header(pname, 5, "balance"),
+			"size[5,3.4]",
+			company.get_company_header(pname, 5, 2.4, "balance"),
+			"label[0.1,0;", minetest.formspec_escape(summary), "]",
 			"box[-0.3,1.15;5.4,0.4;",
 			price_changed and "#f00" or "#111",
 			"]label[0,1.1;",
 			minetest.formspec_escape(
-				(price_changed and "Price changed:" or "For sale for ") ..
+				(price_changed and "Price changed:" or "Price: ") ..
 					area.land_sale),
 			"]",
 		}
@@ -219,10 +222,10 @@ sfinv.register_page("land:land", {
 		local owner = comp and comp.name or pname
 
 		local fs = {
-			company.get_company_header(pname, 8, "land"),
+			company.get_company_header(pname, 8, 7.6, "land"),
 			"tablecolumns[color;tree;text,width=10;text]",
 			-- "tableoptions[background=#00000000;border=false]",
-			"table[0,1;5.8,7.65;list_areas;"
+			"table[0,0;5.8,7.65;list_areas;"
 		}
 
 		local tree = land.get_area_tree(nil, owner)
@@ -270,17 +273,15 @@ sfinv.register_page("land:land", {
 		if context.selected then
 			-- local area = list[context.selected]
 			fs[#fs + 1] = "container[0,-0.2]"
-			fs[#fs + 1] = "button[6,1;2,1;teleport;Teleport]"
+			fs[#fs + 1] = "button[6,0;2,1;teleport;Teleport]"
+			fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,5;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,6;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,7;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,8;1.8,0.8;#222]"
 			fs[#fs + 1] = "container_end[]"
-		else
-			fs[#fs + 1] = "label[0.1,6.1;No area selected]"
 		end
 
 		return sfinv.make_formspec(player, context,

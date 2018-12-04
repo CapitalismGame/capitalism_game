@@ -56,12 +56,14 @@ company.show_company_select_dialog = lib_quickfs.register("company:set_company",
 })
 
 
-function company.get_company_header(pname, width, snippet)
+function company.get_company_header(pname, width, y, snippet)
 	local comp = company.get_active(pname)
 	local func = company.registered_snippets[snippet or "ceo"]
 	assert(func, "Unable to find snippet " .. (snippet or "ceo"))
 
 	return table.concat({
+			"container[0,", tostring(y + 0.45), "]",
+			"box[-0.3,-0.1;", tostring(width + 0.4), ",1.1;#222]",
 			"label[0.1,0.0;",
 			minetest.formspec_escape(comp and comp.title or "No active company"),
 			"]",
@@ -71,6 +73,7 @@ function company.get_company_header(pname, width, snippet)
 			"button[",
 			tostring(width - 2),
 			",0;2,1;switch;Switch]",
+			"container_end[]",
 		}, "")
 end
 
@@ -82,7 +85,7 @@ sfinv.register_page("company:company", {
 
 		-- Using an array to build a formspec is considerably faster
 		local formspec = {
-			company.get_company_header(pname, 8)
+			company.get_company_header(pname, 8, 7.6)
 		}
 
 		if comp then
@@ -92,7 +95,7 @@ sfinv.register_page("company:company", {
 					formspec[#formspec + 1] = "container["
 					formspec[#formspec + 1] = tostring((i % 2) * 4)
 					formspec[#formspec + 1] = ","
-					formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2 + 1)
+					formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2)
 					formspec[#formspec + 1] = ".3]"
 
 					formspec[#formspec + 1] = "label[1.5,-0.3;"
@@ -114,7 +117,7 @@ sfinv.register_page("company:company", {
 				formspec[#formspec + 1] = "box["
 				formspec[#formspec + 1] = tostring((i % 2) * 4)
 				formspec[#formspec + 1] = ","
-				formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2 + 1)
+				formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2)
 				formspec[#formspec + 1] = ";3.8,1.8;#111]"
 
 				i = i + 1
