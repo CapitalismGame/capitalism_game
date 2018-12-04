@@ -1,3 +1,8 @@
+company.register_snippet("balance", function(comp)
+	return "Balance: " .. banking.get_balance(comp)
+end)
+
+
 company.register_panel({
 	title = "Finance",
 	bgcolor = "#DAA520",

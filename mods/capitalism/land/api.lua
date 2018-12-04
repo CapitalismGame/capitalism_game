@@ -2,7 +2,10 @@ land.valid_types = { commercial = true, residential = true, industrial = true }
 
 local adt = audit("land")
 
-function land.get_area_tree(list)
+function land.get_area_tree(list, owner)
+	assert(list == nil or type(list) == "table")
+	assert(owner == nil or type(owner) == "string")
+
 	list = list or areas.areas
 	list = table.copy(list)
 
@@ -10,30 +13,44 @@ function land.get_area_tree(list)
 	local item_by_id = {}
 	local pending_by_id = {}
 
+	if owner then
+		for i=1, #list do
+			if not list[i].marked and list[i].owner == owner then
+				local ptr = i
+				while ptr and not list[ptr].marked do
+					list[ptr].marked = true
+					ptr = list[ptr].parent
+				end
+			end
+		end
+	end
+
 	for i=1, #list do
 		local area    = list[i]
 		area.id       = i
 		area.children = {}
 
-		if not area.parent then
-			root[#root + 1] = area
+		if owner == nil or list[i].marked then
+			if not area.parent then
+				root[#root + 1] = area
 
-			if pending_by_id[i] then
-				area.children = pending_by_id
-				pending_by_id[i] = nil
+				if pending_by_id[i] then
+					area.children = pending_by_id
+					pending_by_id[i] = nil
+				end
+
+			elseif item_by_id[area.parent] then
+				local children = item_by_id[area.parent].children
+				children[#children + 1] = area
+
+			else
+				pending_by_id[area.parent] = pending_by_id[area.parent] or {}
+				local pending = pending_by_id[area.parent]
+				pending[#pending + 1] = area
 			end
 
-		elseif item_by_id[area.parent] then
-			local children = item_by_id[area.parent].children
-			children[#children + 1] = area
-
-		else
-			pending_by_id[area.parent] = pending_by_id[area.parent] or {}
-			local pending = pending_by_id[area.parent]
-			pending[#pending + 1] = area
+			item_by_id[i]   = area
 		end
-
-		item_by_id[i]   = area
 	end
 
 	return root, item_by_id
@@ -242,4 +259,43 @@ function land.buy(area, pname)
 	areas:save()
 
 	return true
+end
+
+function land.can_teleport_to(area, pname)
+	if type(pname) == "userdata" then
+		pname = pname:get_player_name()
+	end
+
+	assert(type(area) == "table")
+	assert(type(pname) == "string")
+
+	local comp  = company.get_active(pname)
+	local owner = comp and comp.name or pname
+	if area.owner ~= owner and not area.land_open then
+		return false, "Attempted to teleport to land (" ..
+				area.name .. " [" .. dump(area.id) .. "]), which is not " ..
+				"open and is owned by someone else (owner=" .. area.owner ..
+				", teleporter=" .. owner .. ")"
+	end
+
+	if not area.spawn_point then
+		return false, "No spawn point for area: " ..
+				area.name .. " [" .. dump(area.id) .. "]"
+	end
+
+	return true
+end
+
+function land.teleport_to(area, player)
+	assert(type(area) == "table")
+	assert(type(player) == "userdata")
+
+	local suc, msg = land.can_teleport_to(area, player:get_player_name())
+	if suc then
+		player:set_pos(area.spawn_point)
+	end
+	if msg then
+		minetest.log("warning", msg)
+	end
+	return suc, msg
 end

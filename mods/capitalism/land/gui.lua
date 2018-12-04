@@ -52,20 +52,13 @@ land.show_debug_to = lib_quickfs.register("land:debug", {
 				fs[#fs + 1] = ","
 			end
 
-			local lnd = land.get_by_area_id(area.id)
-			local p_lnd = area.parent and land.get_by_area_id(area.parent)
-
-			if lnd then
-				if lnd.land_type == "commercial" then
-					fs[#fs + 1] = "#69f,"
-				elseif lnd.land_type == "industrial" then
-					fs[#fs + 1] = "#f96,"
-				elseif lnd.land_type == "residential" then
-					fs[#fs + 1] = "#6f6,"
-				else
-					fs[#fs + 1] = "#000,"
-				end
-			elseif p_lnd then
+			if area.land_type == "commercial" then
+				fs[#fs + 1] = "#69f,"
+			elseif area.land_type == "industrial" then
+				fs[#fs + 1] = "#f96,"
+			elseif area.land_type == "residential" then
+				fs[#fs + 1] = "#6f6,"
+			elseif area.parent and land.get_by_area_id(area.parent) then
 				fs[#fs + 1] = ","
 			else
 				fs[#fs + 1] = "#999,"
@@ -218,65 +211,116 @@ land.show_buy_to = lib_quickfs.register("land:buy", {
 })
 
 
-sfinv.register_page("land:places", {
-	title = "Places",
+sfinv.register_page("land:land", {
+	title = "Land",
 	get = function(self, player, context)
 		local pname = player:get_player_name()
 		local comp  = company.get_active(pname)
+		local owner = comp and comp.name or pname
 
-		-- Using an array to build a formspec is considerably faster
-		local formspec = {
-			company.get_company_header(pname, 8)
+		local fs = {
+			company.get_company_header(pname, 8, "land"),
+			"tablecolumns[color;tree;text,width=10;text]",
+			-- "tableoptions[background=#00000000;border=false]",
+			"table[0,1;5.8,7.65;list_areas;"
 		}
 
-		if comp then
-			local i = 0
-			for _, panel in pairs(company.registered_panels) do
-				if not panel.show_to or panel:show_to(player, comp, context) then
-					formspec[#formspec + 1] = "container["
-					formspec[#formspec + 1] = tostring((i % 2) * 4)
-					formspec[#formspec + 1] = ","
-					formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2 + 1)
-					formspec[#formspec + 1] = ".3]"
+		local tree = land.get_area_tree(nil, owner)
+		local list = flatten_list(tree)
+		context.list = list
 
-					formspec[#formspec + 1] = "label[1.5,-0.3;"
-					formspec[#formspec + 1] = panel.title
-					formspec[#formspec + 1] = "]"
-
-					formspec[#formspec + 1] = "box[0,-0.3;3.8,1.8;"
-					formspec[#formspec + 1] = panel.bgcolor
-					formspec[#formspec + 1] = "]"
-
-					formspec[#formspec + 1] = panel:get(player, comp, context)
-					formspec[#formspec + 1] = "container_end[]"
-
-					i = i + 1
-				end
-			end
-
-			while i < 2*4 do
-				formspec[#formspec + 1] = "box["
-				formspec[#formspec + 1] = tostring((i % 2) * 4)
-				formspec[#formspec + 1] = ","
-				formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2 + 1)
-				formspec[#formspec + 1] = ";3.8,1.8;#111]"
-
-				i = i + 1
-			end
+		if not context.selected then
+			context.selected = 1
+		elseif context.selected > #list then
+			context.selected = #list
 		end
 
-		-- Wrap the formspec in sfinv's layout (ie: adds the tabs and background)
+		for i=1, #list do
+			local area = list[i]
+
+			if i > 1 then
+				fs[#fs + 1] = ","
+			end
+
+			if area.owner ~= owner then
+				fs[#fs + 1] = "#999,"
+			elseif area.land_type == "commercial" then
+				fs[#fs + 1] = "#69f,"
+			elseif area.land_type == "industrial" then
+				fs[#fs + 1] = "#f96,"
+			elseif area.land_type == "residential" then
+				fs[#fs + 1] = "#6f6,"
+			elseif area.parent and land.get_by_area_id(area.parent) then
+				fs[#fs + 1] = ","
+			else
+				fs[#fs + 1] = "#999,"
+			end
+
+			fs[#fs + 1] = area.level .. "," ..
+					minetest.formspec_escape(area.name .. " [id=" .. area.id .. "]") .. "," ..
+					minetest.formspec_escape(area.owner)
+		end
+
+		fs[#fs + 1] = ";"
+		if context.selected then
+			fs[#fs + 1] = tostring(context.selected)
+		end
+		fs[#fs + 1] = "]"
+
+		if context.selected then
+			-- local area = list[context.selected]
+			fs[#fs + 1] = "container[0,-0.2]"
+			fs[#fs + 1] = "button[6,1;2,1;teleport;Teleport]"
+			fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,5;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,6;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,7;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,8;1.8,0.8;#222]"
+			fs[#fs + 1] = "container_end[]"
+		else
+			fs[#fs + 1] = "label[0.1,6.1;No area selected]"
+		end
+
 		return sfinv.make_formspec(player, context,
-				table.concat(formspec, ""), false)
+				table.concat(fs, ""), false)
 	end,
 	on_player_receive_fields = function(self, player, context, fields)
 		if fields.switch then
 			company.show_company_select_dialog(player:get_player_name(), function(player2)
-				sfinv.set_page_and_show(player2, "company:company")
+				sfinv.set_page_and_show(player2, "land:land")
 			end)
+		end
+
+		if fields.list_areas then
+			local evt =  minetest.explode_table_event(fields.list_areas)
+			context.selected = evt.row
+			return true
+		end
+
+		if fields.teleport then
+			if not context.selected or not context.list then
+				minetest.log("warning", "teleport, but no selected or list")
+				return
+			end
+			local area = context.list[context.selected]
+			assert(area)
+
+			if land.teleport_to(area, player) then
+				minetest.close_formspec(player:get_player_name(), "")
+			else
+				sfinv.set_page_and_show(player, "land:land")
+			end
 		end
 	end,
 })
+
+
+company.register_snippet("land", function(comp)
+	local areas = land.get_all(comp.name)
+	return "Land: " .. #areas
+end)
 
 
 company.register_panel({

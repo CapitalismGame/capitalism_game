@@ -33,6 +33,8 @@ minetest.register_node("land:for_sale", {
 		local suc, msg = land.set_price(area, pname, 1000000)
 		if suc then
 			area.land_postpos = vector.new(pos)
+			area.spawn_point = area.spawn_point or area.land_postpos
+			areas:save()
 
 			minetest.set_node(vector.add(pos, {x=0,y=1,z=0}),
 				{ name = "land:for_sale_top" })
@@ -60,6 +62,8 @@ minetest.register_node("land:for_sale", {
 		end
 
 		area.land_postpos = vector.new(pos)
+		area.spawn_point  = area.spawn_point or area.land_postpos
+		areas:save()
 
 		if land.can_set_price(area, pname) then
 			land.show_set_price_to(pname, area, pos)

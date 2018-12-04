@@ -185,6 +185,15 @@ function company.register_panel(def)
 	table.insert(company.registered_panels, def)
 end
 
+company.registered_snippets = {}
+function company.register_snippet(name, func)
+	assert(type(name) == "string")
+	assert(type(func) == "function")
+	assert(not company.registered_snippets[name])
+
+	company.registered_snippets[name] = func
+end
+
 -- Minetest won't be available in tests
 if minetest then
 	local storage = minetest.get_mod_storage()

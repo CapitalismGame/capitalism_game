@@ -55,22 +55,18 @@ company.show_company_select_dialog = lib_quickfs.register("company:set_company",
 	end,
 })
 
-function company.get_company_header(pname, width, mode)
-	local comp = company.get_active(pname)
 
-	local second = ""
-	if comp and mode == "balance" then
-		second = "Balance: " .. banking.get_balance(comp)
-	elseif comp then
-		second = "CEO: " .. comp:get_ceo_name()
-	end
+function company.get_company_header(pname, width, snippet)
+	local comp = company.get_active(pname)
+	local func = company.registered_snippets[snippet or "ceo"]
+	assert(func, "Unable to find snippet " .. (snippet or "ceo"))
 
 	return table.concat({
 			"label[0.1,0.0;",
 			minetest.formspec_escape(comp and comp.title or "No active company"),
 			"]",
 			"label[0.1,0.4;",
-			minetest.formspec_escape(second),
+			minetest.formspec_escape(func(comp)),
 			"]",
 			"button[",
 			tostring(width - 2),
@@ -141,6 +137,11 @@ sfinv.register_page("company:company", {
 -- Place company page at front
 table.insert(sfinv.pages_unordered, 1, sfinv.pages["company:company"])
 table.remove(sfinv.pages_unordered, #sfinv.pages_unordered)
+
+
+company.register_snippet("ceo", function(comp)
+	return "CEO: " .. comp:get_ceo_name()
+end)
 
 company.register_panel({
 	title = "Company House",
