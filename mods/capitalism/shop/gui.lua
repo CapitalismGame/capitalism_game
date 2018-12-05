@@ -178,15 +178,15 @@ shop.show_customer_form = lib_quickfs.register("shop:customer", {
 
 		local fs = {
 			"size[8,9.25]",
-			company.get_company_header(context.pname, 8, "balance"),
-			"label[4,1;",
+			company.get_company_header(context.pname, 8, 8.25, "balance"),
+			"label[4,0;",
 			minetest.formspec_escape(s.name),
 			"]",
 			"tablecolumns[color;text;text;text]",
-			"list[current_player;main;0,5.25;8,1;]",
-			"list[current_player;main;0,6.48;8,3;8]",
-			default.get_hotbar_bg(0, 5.25),
-			"table[0,1;5.8,4;list_items;",
+			"list[current_player;main;0,4.25;8,1;]",
+			"list[current_player;main;0,5.48;8,3;8]",
+			default.get_hotbar_bg(0, 4.25),
+			"table[0,0;5.8,4;list_items;",
 			"#999,Description,Stock,Price",
 		}
 
@@ -232,32 +232,32 @@ shop.show_customer_form = lib_quickfs.register("shop:customer", {
 			local item = items[context.selected]
 			local suc, msg = shop.can_buy(pos, context.pname, item.name, 0, 0)
 			if suc then
-				fs[#fs + 1] = "field[6.3,1.3;2,1;num;;"
+				fs[#fs + 1] = "field[6.3,0.3;2,1;num;;"
 				fs[#fs + 1] = tostring(context.num or 1)
 				fs[#fs + 1] = "]"
-				fs[#fs + 1] = "button[6,2;2,1;buyn;Buy]"
+				fs[#fs + 1] = "button[6,1;2,1;buyn;Buy]"
 			else
-				fs[#fs + 1] = "box[6,1;1.8,0.8;#f00]"
-				fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
-				fs[#fs + 1] = "label[6,1;"
+				fs[#fs + 1] = "box[6,0;1.8,0.8;#f00]"
+				fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
+				fs[#fs + 1] = "label[6,0;"
 				fs[#fs + 1] = minetest.formspec_escape(msg)
 				fs[#fs + 1] = "]"
 			end
 
 			if context.error then
-				fs[#fs + 1] = "box[6,3;1.8,0.8;#f00]"
-				fs[#fs + 1] = "label[6,3;"
+				fs[#fs + 1] = "box[6,2;1.8,0.8;#f00]"
+				fs[#fs + 1] = "label[6,2;"
 				fs[#fs + 1] = minetest.formspec_escape(context.error)
 				fs[#fs + 1] = "]"
 			else
-				fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
+				fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
 			end
-			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
 		else
+			fs[#fs + 1] = "box[6,0;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
 		end
 
 		return table.concat(fs, "")
