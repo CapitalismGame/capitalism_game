@@ -51,7 +51,7 @@ describe("company", function()
 
 	it("check_perm", function()
 		assert.is_false(company.check_perm("baduser", "c:test_company", "SWITCH_TO", nil))
-		assert.is_false(company.check_perm("baduser", "nonexistant", "SWITCH_TO", nil))
+		assert.errors(function() company.check_perm("baduser", "nonexistant", "SWITCH_TO", nil) end)
 		assert.is_true(company.check_perm("testuser", "c:test_company", "SWITCH_TO", nil))
 	end)
 end)

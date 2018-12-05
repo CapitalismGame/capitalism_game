@@ -1,5 +1,6 @@
 company.permissions = {
 	SWITCH_TO      = "Can act on behalf of the company - needed to do anything else",
+	EDIT_DETAILS   = "Can edit the company's details, including name and branding",
 	TRANSFER_MONEY = "Can transfer money to another company or individual",
 	TRANSFER_LAND  = "Can transfer land to another company or individual, without payment",
 	SELL_LAND      = "Can put land up for sale",

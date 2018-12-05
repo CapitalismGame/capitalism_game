@@ -14,6 +14,10 @@ function company.get_by_name(name)
 	return company._companies_by_name[name:lower()]
 end
 
+function company.check_name(name)
+	return ("^(c:[a-z]+)$"):match(name)
+end
+
 function company.create(obj)
 	assert(type(obj) == "table")
 	assert(obj.get_ownership)
@@ -83,7 +87,7 @@ end
 function company.check_perm(pname, cname, permission, meta)
 	assert(type(pname) == "string")
 	assert(player_exists(pname))
-	assert(type(cname) == "string")
+	assert(cname == nil or (type(cname) == "string" and cname:sub(1, 2) == "c:"))
 	assert(type(permission) == "string")
 	assert(company.permissions[permission])
 	assert(meta == nil or type(meta) == "table")
@@ -93,7 +97,7 @@ function company.check_perm(pname, cname, permission, meta)
 		return false
 	end
 
-	if comp.name ~= cname then
+	if cname ~= nil and comp.name ~= cname then
 		return false
 	end
 

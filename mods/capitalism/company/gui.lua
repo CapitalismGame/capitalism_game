@@ -56,6 +56,86 @@ company.show_company_select_dialog = lib_quickfs.register("company:set_company",
 })
 
 
+company.show_company_house = lib_quickfs.register("company:house", {
+	check = function(context, player, comp)
+		return company.check_perm(player:get_player_name(), comp.name, "EDIT_DETAILS")
+	end,
+
+	get = function(context, player, comp)
+		local pname = player:get_player_name()
+		if not comp then
+			context.is_new = true
+		end
+
+		local data = context.data
+		if not data then
+			data = {
+				name  = comp and comp.name:sub(3, #comp.name) or "",
+				title = comp and comp.title or "",
+			}
+			context.data = data
+		end
+
+		local fs = {
+			"size[6,5.1]",
+			company.get_company_header(pname, 6, 4.1),
+			"field[0.3,2.1;6,1;title;Title;", minetest.formspec_escape(data.title), "]",
+			"button[1,3.5;2,1;cancel;Cancel]",
+			"button[3,3.5;2,1;save;Save]",
+		}
+
+		if context.error then
+			fs[#fs + 1] = "box[-0.3,3.05;6.4,0.4;#f00]"
+			fs[#fs + 1] = "label[0,3;"
+			fs[#fs + 1] = minetest.formspec_escape(context.error)
+			fs[#fs + 1] = "]"
+
+			context.error = nil
+		end
+
+		if context.is_new then
+			fs[#fs + 1] = "field[0.3,0.6;6,1;name;Name;"
+			fs[#fs + 1] = minetest.formspec_escape(data.name)
+			fs[#fs + 1] = "]"
+		else
+			fs[#fs + 1] = "label[0,0;Name]"
+			fs[#fs + 1] = "label[0.05,0.5;"
+			fs[#fs + 1] = minetest.formspec_escape(data.name)
+			fs[#fs + 1] = "]"
+			fs[#fs + 1] = "box[0,0.4;5.8,0.66;#111]"
+		end
+
+		return table.concat(fs, "")
+	end,
+
+	on_receive_fields = function(context, player, fields, comp)
+		if fields.switch then
+			company.show_company_select_dialog(player:get_player_name(), function(player2)
+				local pname = player2:get_player_name()
+				company.show_company_house(pname, comp and company.get_active(pname))
+			end)
+			return false
+		end
+
+		local data = context.data
+		if not data then
+			return
+		end
+
+		if fields.name and context.is_new then
+			if not company.check_name then
+				context.error = "Only lowercase letters allowed in name"
+			end
+			data.name = company.check_name("c:" .. fields.name)
+		end
+
+		if context.error then
+			return true
+		end
+	end,
+})
+
+
 function company.get_company_header(pname, width, y, snippet)
 	local comp = company.get_active(pname)
 	local func = company.registered_snippets[snippet or "ceo"]
@@ -133,6 +213,20 @@ sfinv.register_page("company:company", {
 			company.show_company_select_dialog(player:get_player_name(), function(player2)
 				sfinv.set_page_and_show(player2, "company:company")
 			end)
+			return true
+		end
+
+		local comp = company.get_active(player:get_player_name())
+		if not comp then
+			return false
+		end
+
+		for _, panel in pairs(company.registered_panels) do
+			if (not panel.show_to or panel:show_to(player, comp, context)) and
+					panel.on_player_receive_fields and
+					panel.on_player_receive_fields(player, context, fields) then
+				return true
+			end
 		end
 	end,
 })
@@ -150,7 +244,17 @@ company.register_panel({
 	title = "Company House",
 	bgcolor = "#369",
 	get = function(_, _, _, _)
-		return ""
+		return "button[1,0.6;2,1;edit_details;Edit Details]"
+	end,
+	on_player_receive_fields = function(player, context, fields)
+		if fields.edit_details then
+			local pname = player:get_player_name()
+			local comp  = company.get_active(pname)
+			if comp then
+				company.show_company_house(player:get_player_name(), comp)
+				return true
+			end
+		end
 	end,
 })
 
