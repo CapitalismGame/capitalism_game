@@ -7,3 +7,6 @@
 [submodule "mods/areas"]
 	path = mods/areas
 	url = https://github.com/rubenwardy/areas
+[submodule "mods/content/oil"]
+	path = mods/content/oil
+	url = https://github.com/rubenwardy/oil
