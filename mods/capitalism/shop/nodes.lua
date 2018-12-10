@@ -132,3 +132,28 @@ minetest.register_node("shop:chest", _.extend(chest_template, {
 		"shop_chest_side.png"
 	},
 }))
+
+
+minetest.register_craft({
+	output = "shop:counter",
+	recipe = {
+		{"oil:plastic_sheet", "default:glass", "oil:plastic_sheet"},
+		{"default:stick",     "chips:chip",    "default:stick"    },
+		{"default:stick",     "",              "default:stick"    },
+	},
+})
+
+minetest.register_craft({
+	output = "shop:chest",
+	recipe = {
+		{"default:wood", "default:wood",      "default:wood"},
+		{"default:wood", "oil:plastic_sheet", "default:wood"},
+		{"default:wood", "default:wood",      "default:wood"},
+	},
+})
+
+minetest.register_craft({
+	output = "shop:chest",
+	type   = "shapeless",
+	recipe = { "default:chest", "oil:plastic_sheet"},
+})

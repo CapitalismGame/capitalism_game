@@ -10,3 +10,6 @@
 [submodule "mods/content/oil"]
 	path = mods/content/oil
 	url = https://github.com/rubenwardy/oil
+[submodule "mods/content/craftguide"]
+	path = mods/content/craftguide
+	url = git@github.com:minetest-mods/craftguide.git
