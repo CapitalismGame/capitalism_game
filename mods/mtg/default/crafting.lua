@@ -3,56 +3,14 @@
 minetest.register_craft({
 	output = 'default:wood 4',
 	recipe = {
-		{'default:tree'},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:junglewood 4',
-	recipe = {
-		{'default:jungletree'},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:pine_wood 4',
-	recipe = {
-		{'default:pine_tree'},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:acacia_wood 4',
-	recipe = {
-		{'default:acacia_tree'},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:aspen_wood 4',
-	recipe = {
-		{'default:aspen_tree'},
+		{'group:tree'},
 	}
 })
 
 minetest.register_craft({
 	output = 'default:wood',
 	recipe = {
-		{'default:bush_stem'},
-	}
-})
-
-minetest.register_craft({
-	output = 'default:acacia_wood',
-	recipe = {
-		{'default:acacia_bush_stem'},
-	}
-})
-
-minetest.register_craft({
-	output = "default:pine_wood",
-	recipe = {
-		{"default:pine_bush_stem"},
+		{'group:bush_stem'},
 	}
 })
 
@@ -671,23 +629,6 @@ minetest.register_craft({
 })
 
 minetest.register_craft({
-	output = 'default:meselamp',
-	recipe = {
-		{'default:glass'},
-		{'default:mese_crystal'},
-	}
-})
-
-minetest.register_craft({
-	output = "default:mese_post_light 3",
-	recipe = {
-		{"", "default:glass", ""},
-		{"default:mese_crystal", "default:mese_crystal", "default:mese_crystal"},
-		{"", "group:wood", ""},
-	}
-})
-
-minetest.register_craft({
 	output = 'default:obsidian_shard 9',
 	recipe = {
 		{'default:obsidian'}
@@ -857,13 +798,6 @@ minetest.register_craft({
 minetest.register_craft({
 	type = 'cooking',
 	output = 'default:gold_ingot',
-	recipe = 'default:skeleton_key',
-	cooktime = 5,
-})
-
-minetest.register_craft({
-	type = 'cooking',
-	output = 'default:gold_ingot',
 	recipe = 'default:key',
 	cooktime = 5,
 })
@@ -880,64 +814,11 @@ minetest.register_craft({
 	burntime = 30,
 })
 
--- Burn time for all woods are in order of wood density,
--- which is also the order of wood colour darkness:
--- aspen, pine, apple, acacia, jungle
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:aspen_tree",
-	burntime = 22,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:pine_tree",
-	burntime = 26,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:acacia_tree",
-	burntime = 34,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:jungletree",
-	burntime = 38,
-})
-
-
 -- Support use of group:wood, includes default:wood which has the same burn time
 minetest.register_craft({
 	type = "fuel",
 	recipe = "group:wood",
 	burntime = 7,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:aspen_wood",
-	burntime = 5,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:pine_wood",
-	burntime = 6,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:acacia_wood",
-	burntime = 8,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:junglewood",
-	burntime = 9,
 })
 
 
@@ -1067,14 +948,8 @@ minetest.register_craft({
 
 minetest.register_craft({
 	type = "fuel",
-	recipe = "default:acacia_bush_stem",
-	burntime = 8,
-})
-
-minetest.register_craft({
-	type = "fuel",
-	recipe = "default:pine_bush_stem",
-	burntime = 6,
+	recipe = "group:bush_stem",
+	burntime = 5,
 })
 
 minetest.register_craft({
