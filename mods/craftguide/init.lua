@@ -368,9 +368,8 @@ function craftguide:get_init_items()
 		-- local is_fuel = get_fueltime(name) > 0
 		if (not (def.groups.not_in_craft_guide == 1 or
 			 def.groups.not_in_creative_inventory == 1)) and
-		        (get_recipe(name).items) and
+			 (get_recipe(name).items) and
 			 def.description and def.description ~= "" then
-
 			counter = counter + 1
 			items_list[counter] = name
 		end

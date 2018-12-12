@@ -10,3 +10,6 @@
 [submodule "mods/content/oil"]
 	path = mods/content/oil
 	url = https://github.com/rubenwardy/oil
+[submodule "mods/libs/node_io"]
+	path = mods/libs/node_io
+	url = https://github.com/auouymous/node_io.git

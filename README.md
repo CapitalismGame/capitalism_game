@@ -12,3 +12,21 @@ The aim is to achieve deep simulation of companies and the government.
 
 Requires Minetest 5.0+  
 License: LGPLv2.1+ for code, CC-BY-SA 3.0 for media, unless otherwise stated.
+
+## Credits
+
+This game includes a large number of custom mods, mostly found in the capitalism
+modpack. The game also uses a lot of previous mods made by the author or other
+authors.
+
+The licenses and credits for each mod should be listed in the mod folder itself.
+
+This game is based upon a number of works, without which it would've been a
+lot harder to create.
+
+* **ShadowNinja**: [areas](https://github.com/ShadowNinja/areas/).
+* **auouymous**: [node_io](https://github.com/auouymous/node_io).
+* **rubenwardy**: [ChatCmdBuilder](https://github.com/rubenwardy/ChatCmdBuilder/), [sfinv](https://github.com/rubenwardy/sfinv/).
+* **RealBadAngel**: Textures from [technic](https://github.com/minetest-mods/technic/).
+* **VanessaE**: Textures from [basic_materials](https://gitlab.com/VanessaE/basic_materials).
+* **Misc**: Textures from [Minetest Game](https://github.com/minetest/minetest_game/).

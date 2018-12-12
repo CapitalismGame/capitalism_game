@@ -4,8 +4,9 @@ allow_defined_top = true
 exclude_files = {
     "mods/mtg",
     "mods/libs/lib_chatcmdbuilder",
+    "mods/libs/node_io",
     "mods/areas",
-    "mods/content/pipeworks",
+    "mods/craftguide",
 }
 
 globals = {
