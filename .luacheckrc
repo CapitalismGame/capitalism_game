@@ -4,7 +4,7 @@ allow_defined_top = true
 exclude_files = {
     "mods/mtg",
     "mods/libs/lib_chatcmdbuilder",
-    "mods/libs/node_io",
+    "mods/mechanics",
     "mods/areas",
     "mods/craftguide",
 }
@@ -29,7 +29,7 @@ read_globals = {
     "default", "sfinv", "creative", "bucket",
 
 	-- Libs
-	"ChatCmdBuilder", "describe", "it", "awards",
+	"ChatCmdBuilder", "describe", "it", "awards", "node_io",
 
     "_", "lib_utils", "lib_quickfs",
 }

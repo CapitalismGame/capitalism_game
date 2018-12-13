@@ -7,6 +7,9 @@
 [submodule "mods/content/oil"]
 	path = mods/content/oil
 	url = https://github.com/rubenwardy/oil
-[submodule "mods/libs/node_io"]
-	path = mods/libs/node_io
+[submodule "mods/mechanics/node_io"]
+	path = mods/mechanics/node_io
 	url = https://github.com/auouymous/node_io.git
+[submodule "mods/mechanics/fluid_lib"]
+	path = mods/mechanics/fluid_lib
+	url = https://gitlab.icynet.eu/evert/fluid_lib.git
