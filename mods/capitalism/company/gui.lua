@@ -237,7 +237,7 @@ table.remove(sfinv.pages_unordered, #sfinv.pages_unordered)
 
 
 company.register_snippet("ceo", function(comp)
-	return "CEO: " .. comp:get_ceo_name()
+	return comp and ("CEO: " .. comp:get_ceo_name()) or ""
 end)
 
 company.register_panel({
