@@ -6,6 +6,7 @@ company.permissions = {
 	SELL_LAND      = "Can put land up for sale",
 	BUY_LAND       = "Can buy land. Requires TRANSFER_MONEY",
 	INTERACT_AREA  = "Can build/dig/etc on company land",
+	CHANGE_SPAWN   = "Can change the spawn position of a plot.",
 	OWNS_AREA      = "Can perform general area admin actions",
 	SHOP_CREATE    = "Can create a shop on commercial areas",
 	SHOP_ADMIN     = "Can change the settings of a shop, including prices",

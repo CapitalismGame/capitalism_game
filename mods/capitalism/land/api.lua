@@ -299,3 +299,27 @@ function land.teleport_to(area, player)
 	end
 	return suc, msg
 end
+
+function land.can_set_spawn(area, pname)
+	if type(pname) == "userdata" then
+		pname = pname:get_player_name()
+	end
+
+	assert(type(area) == "table")
+	assert(type(pname) == "string")
+
+	local comp  = company.get_active(pname)
+	local owner = comp and comp.name or pname
+	if area.owner ~= owner and not area.land_open then
+		return false, "Unable to change spawn of land (" ..
+				area.name .. " [" .. dump(area.id) .. "]), because it is not  " ..
+				"owned by you (owner=" .. area.owner ..
+				", you you need to switch companies?)"
+	end
+
+	if comp and not comp:check_perm(pname, "CHANGE_SPAWN", { area = area }) then
+		return false, "Missing permission: CHANGE_SPAWN"
+	end
+
+	return true
+end

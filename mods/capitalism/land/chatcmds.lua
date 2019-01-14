@@ -13,7 +13,6 @@ ChatCmdBuilder.new("land", function(cmd)
 		return true, "Showed land debug form"
 	end)
 
-
 	cmd:sub("list", function(name)
 		local comp  = company.get_active(name)
 		local owner = comp and comp.name or name
@@ -72,6 +71,35 @@ ChatCmdBuilder.new("land", function(cmd)
 		areas:save()
 
 		return true, "Removed type"
+	end)
+
+	local function set_spawn(name, pos)
+		assert(type(name) == "string")
+		assert(type(pos) == "table")
+		assert(pos and pos.x and pos.y and pos.z)
+
+		pos = vector.round(pos)
+
+		local area = land.get_by_pos(pos)
+
+		local suc, msg = land.can_set_spawn(area, name)
+		if not suc then
+			return false, msg
+		end
+
+		area.spawn_point = pos
+
+		return true, "Set spawn to " .. minetest.pos_to_string(pos)
+	end
+
+	cmd:sub("spawn :pos:pos", set_spawn)
+
+	cmd:sub("spawn", function(name)
+		local player = minetest.get_player_by_name(name)
+		if not player then
+			return false, "Usage: spawn (x,y,z)"
+		end
+		return set_spawn(name, player:get_pos())
 	end)
 end, {
 	description = "Land tools",
