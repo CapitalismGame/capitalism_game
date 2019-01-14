@@ -88,6 +88,7 @@ ChatCmdBuilder.new("land", function(cmd)
 		end
 
 		area.spawn_point = pos
+		areas:save()
 
 		return true, "Set spawn to " .. minetest.pos_to_string(pos)
 	end
