@@ -232,9 +232,9 @@ sfinv.register_page("land:land", {
 		local list = flatten_list(tree)
 		context.list = list
 
-		if not context.selected then
+		if not context.selected and #list > 0 then
 			context.selected = 1
-		elseif context.selected > #list then
+		elseif context.selected and context.selected > #list then
 			context.selected = #list
 		end
 
@@ -270,9 +270,9 @@ sfinv.register_page("land:land", {
 		end
 		fs[#fs + 1] = "]"
 
+		fs[#fs + 1] = "container[0,-0.2]"
 		if context.selected then
 			-- local area = list[context.selected]
-			fs[#fs + 1] = "container[0,-0.2]"
 			fs[#fs + 1] = "button[6,0;2,1;teleport;Teleport]"
 			fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
@@ -281,8 +281,17 @@ sfinv.register_page("land:land", {
 			fs[#fs + 1] = "box[6,5;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,6;1.8,0.8;#222]"
 			fs[#fs + 1] = "box[6,7;1.8,0.8;#222]"
-			fs[#fs + 1] = "container_end[]"
+		else
+			fs[#fs + 1] = "box[6,0;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,5;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,6;1.8,0.8;#222]"
+			fs[#fs + 1] = "box[6,7;1.8,0.8;#222]"
 		end
+		fs[#fs + 1] = "container_end[]"
 
 		return sfinv.make_formspec(player, context,
 				table.concat(fs, ""), false)
@@ -305,6 +314,7 @@ sfinv.register_page("land:land", {
 				minetest.log("warning", "teleport, but no selected or list")
 				return
 			end
+
 			local area = context.list[context.selected]
 			assert(area)
 

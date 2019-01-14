@@ -141,6 +141,11 @@ function company.get_company_header(pname, width, y, snippet)
 	local func = company.registered_snippets[snippet or "ceo"]
 	assert(func, "Unable to find snippet " .. (snippet or "ceo"))
 
+	local snippet_text = ""
+	if comp and func then
+		snippet_text = minetest.formspec_escape(func(comp))
+	end
+
 	return table.concat({
 			"container[0,", tostring(y + 0.45), "]",
 			"box[-0.3,-0.1;", tostring(width + 0.4), ",1.1;#222]",
@@ -148,7 +153,7 @@ function company.get_company_header(pname, width, y, snippet)
 			minetest.formspec_escape(comp and comp.title or "No active company"),
 			"]",
 			"label[0.1,0.4;",
-			minetest.formspec_escape(func(comp)),
+			snippet_text,
 			"]",
 			"button[",
 			tostring(width - 2),
