@@ -272,15 +272,12 @@ function land.can_teleport_to(area, pname)
 	local comp  = company.get_active(pname)
 	local owner = comp and comp.name or pname
 	if area.owner ~= owner and not area.land_open then
-		return false, "Attempted to teleport to land (" ..
-				area.name .. " [" .. dump(area.id) .. "]), which is not " ..
-				"open and is owned by someone else (owner=" .. area.owner ..
-				", teleporter=" .. owner .. ")"
+		return false, "Not open and is owned by someone else (owner=" ..
+				area.owner .. ")"
 	end
 
 	if not area.spawn_point then
-		return false, "No spawn point for area: " ..
-				area.name .. " [" .. dump(area.id) .. "]"
+		return false, "No spawn point"
 	end
 
 	return true

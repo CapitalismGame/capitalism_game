@@ -233,7 +233,12 @@ sfinv.register_page("land:land", {
 		context.list = list
 
 		if not context.selected and #list > 0 then
-			context.selected = 1
+			for i=1, #list do
+				if list[i].owner == owner then
+					context.selected = i
+					break
+				end
+			end
 		elseif context.selected and context.selected > #list then
 			context.selected = #list
 		end
@@ -272,25 +277,26 @@ sfinv.register_page("land:land", {
 
 		fs[#fs + 1] = "container[0,-0.2]"
 		if context.selected then
-			-- local area = list[context.selected]
-			fs[#fs + 1] = "button[6,0;2,1;teleport;Teleport]"
-			fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,5;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,6;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,7;1.8,0.8;#222]"
+			local area     = list[context.selected]
+			local suc, msg = land.can_teleport_to(area, pname)
+			if suc then
+				fs[#fs + 1] = "button[6,0;2,1;teleport;Teleport]"
+			else
+				fs[#fs + 1] = "textarea[6.3,0;2,1;;;"
+				fs[#fs + 1] = minetest.formspec_escape(msg)
+				fs[#fs + 1] = "]"
+				fs[#fs + 1] = "box[6,0;1.8,0.8;#222]"
+			end
 		else
 			fs[#fs + 1] = "box[6,0;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,5;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,6;1.8,0.8;#222]"
-			fs[#fs + 1] = "box[6,7;1.8,0.8;#222]"
 		end
+		fs[#fs + 1] = "box[6,1;1.8,0.8;#222]"
+		fs[#fs + 1] = "box[6,2;1.8,0.8;#222]"
+		fs[#fs + 1] = "box[6,3;1.8,0.8;#222]"
+		fs[#fs + 1] = "box[6,4;1.8,0.8;#222]"
+		fs[#fs + 1] = "box[6,5;1.8,0.8;#222]"
+		fs[#fs + 1] = "box[6,6;1.8,0.8;#222]"
+		fs[#fs + 1] = "box[6,7;1.8,0.8;#222]"
 		fs[#fs + 1] = "container_end[]"
 
 		return sfinv.make_formspec(player, context,
@@ -306,6 +312,7 @@ sfinv.register_page("land:land", {
 		if fields.list_areas then
 			local evt =  minetest.explode_table_event(fields.list_areas)
 			context.selected = evt.row
+			sfinv.set_page_and_show(player, "land:land")
 			return true
 		end
 
