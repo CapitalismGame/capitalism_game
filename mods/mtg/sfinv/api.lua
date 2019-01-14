@@ -121,6 +121,13 @@ function sfinv.set_player_inventory_formspec(player, context)
 	player:set_inventory_formspec(fs)
 end
 
+function sfinv.set_player_inventory_formspec_and_show(player, context)
+	local fs = sfinv.get_formspec(player,
+			context or sfinv.get_or_create_context(player))
+	player:set_inventory_formspec(fs)
+	minetest.show_formspec(player:get_player_name(), "", fs)
+end
+
 function sfinv.set_page(player, pagename)
 	local context = sfinv.get_or_create_context(player)
 	local oldpage = sfinv.pages[context.page]
@@ -140,8 +147,9 @@ function sfinv.set_page_and_show(player, pagename)
 	sfinv.show_formspec(player)
 end
 
-function sfinv.show_formspec(player)
-	local fs = sfinv.get_formspec(player, sfinv.get_or_create_context(player))
+function sfinv.show_formspec(player, context)
+	local context = context or sfinv.get_or_create_context(player)
+	local fs = sfinv.get_formspec(player, context)
 	minetest.show_formspec(player:get_player_name(), "", fs)
 end
 

@@ -479,7 +479,7 @@ local function get_fields(player, ...)
 		if sfinv_only then
 			local context = sfinv.get_or_create_context(player)
 			context.fuel = is_fuel
-			sfinv.set_player_inventory_formspec(player, context)
+			sfinv.set_player_inventory_formspec_and_show(player, context)
 		else
 			craftguide:get_formspec(player_name, is_fuel)
 		end
