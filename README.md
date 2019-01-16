@@ -8,7 +8,7 @@
 Capitalism Game is an in-development economy game for the Minetest Engine.
 The aim is to achieve deep simulation of companies and the government.
 
-[Read More](https://rubenwardy.com/capitalism_game)
+[Read More](https://capitalismgame.github.io/capitalism_game/)
 
 Requires Minetest 5.0+  
 License: LGPLv2.1+ for code, CC-BY-SA 3.0 for media, unless otherwise stated.
