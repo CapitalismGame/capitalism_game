@@ -1,8 +1,16 @@
+---
+-- @module banking
+
 banking._accounts = {}
 banking._account_by_owner = {}
 
 local adt = audit("banking")
 
+
+--- Gets the balance for a particular account
+--
+-- @string owner Account owner
+-- @treturn int
 function banking.get_balance(owner)
 	if type(owner) == "table" then
 		owner = owner.name
@@ -14,6 +22,9 @@ function banking.get_balance(owner)
 	return acc.balance
 end
 
+
+--- Adds an account to the local cache
+-- @account acc
 function banking.add_account(acc)
 	assert(not banking._account_by_owner[acc.owner])
 
@@ -24,12 +35,27 @@ function banking.add_account(acc)
 	return acc
 end
 
+
+--- Gets account by owner name
+--
+-- @owner owner
+-- @treturn banking.Account
 function banking.get_by_owner(owner)
 	assert(type(owner) == "string")
 
 	return banking._account_by_owner[owner]
 end
 
+
+--- Transfers money between accounts, with permission checking
+--
+-- @string actor User requesting this transfer
+-- @string from From account
+-- @string to Target account
+-- @int amount
+-- @string reason Transaction reason
+-- @treturn true
+-- @error Error message
 function banking.transfer(actor, from, to, amount, reason)
 	assert(type(actor)  == "string")
 	assert(type(from)   == "string")

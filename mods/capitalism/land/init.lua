@@ -1,3 +1,7 @@
+---
+-- @module land
+
+--- land table
 land = {}
 
 print("[land] loading...")

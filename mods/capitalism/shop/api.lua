@@ -1,20 +1,32 @@
+--- Adds shops
+--
+-- @module shop
+
 _.extend(shop, {
 	_shops = {},
 	_shops_by_area = {},
 	_context = {}
 })
 
+
+--- Get a shop by its `land` area ID
+--
+-- @int aid
 function shop.get_by_area(aid)
 	assert(type(aid) == "number")
 	return shop._shops_by_area[aid]
 end
 
+
+--- @pos pos
 function shop.get_by_pos(pos)
 	assert(type(pos) == "table")
 	local area = land.get_by_pos(pos)
 	return area and shop.get_by_area(area.id)
 end
 
+
+--- @tparam table s
 function shop.add_shop(s)
 	assert(not shop._shops_by_area[s.a_id])
 
@@ -23,25 +35,10 @@ function shop.add_shop(s)
 	return true
 end
 
-function shop.init_inventory(name)
-	return minetest.create_detached_inventory("shop_inv_" .. name, {
-		allow_put = function(inv, listname, index, stack, player)
-			return 0
-		end,
-
-		allow_take = function(inv, listname, index, stack, player)
-			return 0
-		end
-	})
-end
-
-function shop.get_inventory_or_create(name)
-	return minetest.get_inventory({
-		type = "detached",
-		name = "shop_inv_" .. name
-	}) or shop.init_inventory(name)
-end
-
+--- Checks whether a user can use the admin interface for the shop
+--
+-- @player pname
+-- @pos pos
 function shop.can_admin(pname, pos)
 	local area = land.get_by_pos(pos)
 	local comp = company.get_by_name(area.owner)
@@ -50,6 +47,13 @@ function shop.can_admin(pname, pos)
 		company.check_perm(pname, comp.name, "SHOP_ADMIN", { pos = pos })
 end
 
+
+--- Creates shops, checks permissions
+--
+-- @player pname
+-- @pos pos
+-- @treturn true
+-- @error Error message
 function shop.create_shop(pname, pos)
 	local area = land.get_by_pos(pos)
 	local comp = company.get_by_name(area.owner)
@@ -71,6 +75,12 @@ function shop.create_shop(pname, pos)
 	return true
 end
 
+
+--- Unassigns item allocation of chest. Will return any items.
+--
+-- @shop s
+-- @pos pos
+-- @param inv Inventory userdata
 function shop.unassign_chest(s, pos, inv)
 	local chest = s:get_chest(pos)
 	if chest.itemname then
@@ -92,6 +102,16 @@ function shop.unassign_chest(s, pos, inv)
 	chest.count    = 0
 end
 
+
+--- Can user buy from shop, checks permissions
+--
+-- @pos pos
+-- @player pname
+-- @string itemname
+-- @int count
+-- @int price
+-- @treturn true
+-- @error Error message
 function shop.can_buy(pos, pname, itemname, count, price)
 	assert(type(pos) == "table")
 	assert(type(pname) == "string")
@@ -117,6 +137,16 @@ function shop.can_buy(pos, pname, itemname, count, price)
 	return true
 end
 
+
+--- Buy from shop, checks permissions
+--
+-- @pos pos
+-- @player pname
+-- @tparam table item
+-- @int count
+--
+-- @treturn true
+-- @error Error message
 function shop.buy(pos, pname, item, count)
 	assert(type(pos) == "table")
 	assert(type(pname) == "string")
@@ -192,6 +222,7 @@ function shop.buy(pos, pname, item, count)
 
 	return true
 end
+
 
 -- Minetest won't be available in tests
 if minetest then

@@ -21,9 +21,6 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 -- OTHER DEALINGS IN THE SOFTWARE.
 
---- Underscore is a set of utility functions for dealing with
--- iterators, arrays, tables, and functions.
-
 local Underscore = { funcs = {} }
 Underscore.__index = Underscore
 
@@ -59,7 +56,7 @@ function Underscore.range(start_i, end_i, step)
 	return Underscore:new(range_iter)
 end
 
---- Identity function. This function looks useless, but is used throughout Underscore as a default.
+-- Identity function. This function looks useless, but is used throughout Underscore as a default.
 -- @name _.identity
 -- @param value any object
 -- @return value

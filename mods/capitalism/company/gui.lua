@@ -1,3 +1,9 @@
+---
+-- @module company
+
+--- Shows dialog to select company
+-- @string name Player name to show to
+-- @function company.show_company_select_dialog
 company.show_company_select_dialog = lib_quickfs.register("company:set_company", {
 	get = function(context, player)
 		local pname   = player:get_player_name()

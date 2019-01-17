@@ -1,3 +1,7 @@
+---
+-- @module banking
+
+--- banking table
 banking = {}
 
 print("[banking] loading...")

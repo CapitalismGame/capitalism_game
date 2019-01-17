@@ -1,6 +1,18 @@
+--- Introduces bank accounts and transactions.
+-- @module banking
+
+--- Account
+--
+-- Class which represents a bank account
+-- @type Account
 local Account = {}
 banking.Account = Account
 
+
+--- Constructor
+--
+-- @param obj A table to construct an object on top of
+-- @treturn banking.Account
 function Account:new(obj)
 	obj = obj or {}
 	setmetatable(obj, self)
@@ -11,6 +23,10 @@ function Account:new(obj)
 	return obj
 end
 
+
+--- Export to Lua table
+--
+-- @treturn table
 function Account:to_table()
 	return {
 		owner   = self.owner,
@@ -19,6 +35,11 @@ function Account:to_table()
 	}
 end
 
+
+--- Import from Lua table
+--
+-- @tparam table t
+-- @treturn bool true for success
 function Account:from_table(t)
 	self.owner   = t.owner
 	self.balance = t.balance
@@ -29,6 +50,13 @@ function Account:from_table(t)
 		type(self.ledger) == "table"
 end
 
+
+--- Withdraw from account
+--
+-- @int amount
+-- @string to target account
+-- @string reason Transaction message
+-- @treturn bool Returns false on failure
 function Account:withdraw(amount, to, reason)
 	assert(amount > 0)
 
@@ -40,7 +68,13 @@ function Account:withdraw(amount, to, reason)
 	return true
 end
 
-function Account:deposit(amount, to, reason)
+
+--- Deposit into account
+--
+-- @int amount
+-- @string from from account
+-- @string reason Transaction message
+function Account:deposit(amount, from, reason)
 	assert(amount > 0)
 
 	self.balance = self.balance + amount

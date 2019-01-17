@@ -1,7 +1,24 @@
+--- Introduces land plots, and modifies areas to allow companies to own land.
+--
+-- This mod current uses areas as a backend, which means that a plot = an area.
+--
+-- @module land
+
+
+--- Dictionary of valid types
 land.valid_types = { commercial = true, residential = true, industrial = true }
 
 local adt = audit("land")
 
+
+--- Generates a tree representing land ownership hierarchy for a particular owner.
+--
+-- Each element returned will have a children property, which will be a table
+-- of child elements.
+--
+-- @tparam [table] list A list of owned areas
+-- @owner owner Player name or company name
+-- @treturn (table,table) root, area by id
 function land.get_area_tree(list, owner)
 	assert(list == nil or type(list) == "table")
 	assert(owner == nil or type(owner) == "string")
@@ -56,6 +73,11 @@ function land.get_area_tree(list, owner)
 	return root, item_by_id
 end
 
+
+--- Gets all plots owned by a particular owner
+--
+-- @owner owner Player name or company name
+-- @treturn [table] List of plots
 function land.get_all(owner)
 	local lands = {}
 	for id, area in pairs(areas.areas) do
@@ -68,6 +90,17 @@ function land.get_all(owner)
 	return lands
 end
 
+
+--- Gets the owning plot of a particular area
+--
+-- There is at most one owning area of a particular position; because
+-- plots must not overlap, and any child of a plot most be fully contained.
+--
+-- This function essential returns the lowest plot in the tree at a particular
+-- point
+--
+-- @pos pos
+-- @treturn [table]
 function land.get_by_pos(pos)
 	local areas = areas:getAreasAtPos(pos)
 
@@ -90,6 +123,11 @@ function land.get_by_pos(pos)
 	return first
 end
 
+
+--- Gets a plot by its area ID (as in the mod area)
+--
+-- @int id
+-- @treturn table plot
 function land.get_by_area_id(id)
 	assert(type(id) == "number")
 
@@ -97,6 +135,14 @@ function land.get_by_area_id(id)
 	return area and area.land_type and area
 end
 
+
+--- Transfers a plot between two owners, after checking relevant permissions.
+--
+-- @int id
+-- @owner newowner
+-- @player pname
+-- @treturn true
+-- @error Error message
 function land.transfer(id, newowner, pname)
 	assert(type(id) == "number")
 	assert(type(newowner) == "string")
@@ -145,6 +191,14 @@ function land.transfer(id, newowner, pname)
 	return true, "Transfered area id=" .. id .. " to " .. newowner
 end
 
+
+--- Whether a user can put a plot up for sale, or change the price when already
+-- for sale
+--
+-- @tparam table area
+-- @player pname
+-- @treturn true
+-- @error Error message
 function land.can_set_price(area, pname)
 	if not area or not area.land_type then
 		return false, "Unable to sell unowned or unclassified (ie: c/i/r) area"
@@ -172,6 +226,14 @@ function land.can_set_price(area, pname)
 	return true
 end
 
+
+--- Puts a plot up for sale, or changes the price when already for sale
+--
+-- @tparam table area
+-- @player pname
+-- @number price
+-- @treturn true
+-- @error Error message
 function land.set_price(area, pname, price)
 	assert(type(area) == "table")
 	assert(pname == nil or type(pname) == "string")
@@ -196,6 +258,14 @@ function land.set_price(area, pname, price)
 	return true
 end
 
+
+--- Whether a user can buy a plot
+--
+-- @tparam table area
+-- @player pname
+-- @company comp
+-- @treturn true
+-- @error Error message
 function land.can_buy(area, pname, comp)
 	assert(type(area) == "table")
 	assert(type(pname) == "string")
@@ -224,6 +294,13 @@ function land.can_buy(area, pname, comp)
 	return true
 end
 
+
+--- Buy a plot
+--
+-- @tparam table area
+-- @player pname
+-- @treturn true
+-- @error Error message
 function land.buy(area, pname)
 	assert(type(area) == "table")
 	assert(type(pname) == "string")
@@ -261,6 +338,13 @@ function land.buy(area, pname)
 	return true
 end
 
+
+--- Whether a user can teleport to a plot
+--
+-- @tparam table area
+-- @player pname
+-- @treturn true
+-- @error Error message
 function land.can_teleport_to(area, pname)
 	if type(pname) == "userdata" then
 		pname = pname:get_player_name()
@@ -283,6 +367,13 @@ function land.can_teleport_to(area, pname)
 	return true
 end
 
+
+--- Teleport a user to a plot
+--
+-- @tparam table area
+-- @param player Player userdata
+-- @treturn true
+-- @error Error message
 function land.teleport_to(area, player)
 	assert(type(area) == "table")
 	assert(type(player) == "userdata")
@@ -297,6 +388,13 @@ function land.teleport_to(area, player)
 	return suc, msg
 end
 
+
+--- Whether a user can set the spawn of a plot
+--
+-- @tparam table area
+-- @player pname
+-- @treturn true
+-- @error Error message
 function land.can_set_spawn(area, pname)
 	if type(pname) == "userdata" then
 		pname = pname:get_player_name()

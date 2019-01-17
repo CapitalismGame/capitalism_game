@@ -1,3 +1,7 @@
+---
+-- @module company
+
+--- company table
 company = {}
 
 print("[company] loading...")

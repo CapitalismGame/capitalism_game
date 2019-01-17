@@ -1,3 +1,7 @@
+---
+-- @module company
+
+--- Permissions table
 company.permissions = {
 	SWITCH_TO      = "Can act on behalf of the company - needed to do anything else",
 	EDIT_DETAILS   = "Can edit the company's details, including name and branding",

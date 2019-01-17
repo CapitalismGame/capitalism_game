@@ -1,3 +1,8 @@
+--- Introduces the concept of companies and the relationship between
+-- companies and players. It adds permissions, but does not add stocks or shares.
+--
+-- @module company
+
 _.extend(company, {
 	_companies = {},
 	_companies_by_name = {},
@@ -8,16 +13,28 @@ local adt = audit("company")
 local player_exists = minetest and minetest.player_exists or
 		function() return true end
 
+
+--- Get a company by its name.
+-- Company names are always in the form "c:[a-z-_]+"
+-- @treturn company.Company
 function company.get_by_name(name)
 	assert(type(name) == "string")
 
 	return company._companies_by_name[name:lower()]
 end
 
+
+--- Verifies where a given string is a valid company name
+-- @treturn bool
 function company.check_name(name)
 	return ("^(c:[a-z]+)$"):match(name)
 end
 
+
+--- Creates a new company from a company reference
+--
+-- @tparam company.Company obj
+-- @treturn bool
 function company.create(obj)
 	assert(type(obj) == "table")
 	assert(obj.get_ownership)
@@ -35,6 +52,13 @@ function company.create(obj)
 	return true
 end
 
+
+--- Adds a company to in-memory store.
+--
+-- Called by load and create.
+--
+-- @tparam company.Company obj
+-- @treturn bool
 function company.add(obj)
 	assert(type(obj) == "table")
 	assert(obj.get_ownership)
@@ -56,6 +80,14 @@ function company.add(obj)
 	return true
 end
 
+
+--- Set the active company for a player
+--
+-- Performs permission checks.
+--
+-- @string pname
+-- @tparam company.Company|string comp
+-- @treturn bool
 function company.set_active(pname, comp)
 	assert(type(pname) == "string")
 	assert(player_exists(pname))
@@ -76,6 +108,10 @@ function company.set_active(pname, comp)
 	end
 end
 
+--- Get active company for player name
+--
+-- @string pname
+-- @treturn ?company.Company
 function company.get_active(pname)
 	assert(type(pname) == "string")
 	assert(player_exists(pname))
@@ -84,6 +120,18 @@ function company.get_active(pname)
 	return name and company.get_by_name(name) or nil
 end
 
+
+--- Check whether a player has a certain permission for a company
+--
+-- Calling with a nil or nonexistent company will always result in
+-- a return value of false
+--
+-- @see company.permissions
+-- @string pname the username
+-- @tparam ?string cname
+-- @string permission permission name, string
+-- @tparam ?table meta Metadata about this request
+-- @treturn bool
 function company.check_perm(pname, cname, permission, meta)
 	assert(type(pname) == "string")
 	assert(player_exists(pname))
@@ -104,6 +152,12 @@ function company.check_perm(pname, cname, permission, meta)
 	return comp:check_perm(pname, permission, meta)
 end
 
+
+--- Get active company for player name,
+--   or send chat message if no active companies.
+--
+-- @string pname
+-- @treturn ?company.Company
 function company.get_active_or_msg(pname)
 	assert(type(pname) == "string")
 	assert(player_exists(pname))
@@ -118,6 +172,10 @@ function company.get_active_or_msg(pname)
 	end
 end
 
+
+--- List companies player is a member or CEO of
+-- @string pname
+-- @treturn [company.Company]
 function company.get_companies_for_player(pname)
 	assert(type(pname) == "string")
 	assert(player_exists(pname))
@@ -131,6 +189,16 @@ function company.get_companies_for_player(pname)
 	return comps
 end
 
+
+--- Set the permissions for a particular member on a company
+--
+-- @tparam company.Company comp
+-- @string actor The player which is performing this action
+-- @string target The member which is having their perms set
+-- @string permission Permission name
+-- @bool is_grant Whether the permission should be added or taken away
+-- @treturn true
+-- @error string Error message
 function company.set_perms(comp, actor, target, permission, is_grant)
 	if not comp:check_perm(actor, "MANAGE_MEMBERS",
 			{ action = "add", name = "username" }) then
@@ -182,14 +250,27 @@ function company.register_on_create(func)
 	table.insert(company.registered_on_creates, func)
 end
 
+
+--- @see company.register_panel
 company.registered_panels = {}
+
+
+--- Register a panel, shown as colored boxes on the Company GUI
+-- @tparam table def
 function company.register_panel(def)
 	assert(type(def) == "table")
 
 	table.insert(company.registered_panels, def)
 end
 
+
+---@see company.register_snippet
 company.registered_snippets = {}
+
+
+--- Register a snippet to go on company switchers
+-- @string name
+-- @tparam function func
 function company.register_snippet(name, func)
 	assert(type(name) == "string")
 	assert(type(func) == "function")
@@ -197,6 +278,7 @@ function company.register_snippet(name, func)
 
 	company.registered_snippets[name] = func
 end
+
 
 -- Minetest won't be available in tests
 if minetest then
