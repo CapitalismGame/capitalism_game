@@ -1,6 +1,29 @@
+--- @module shop
+
+--- @type Shop
 local Shop = {}
 shop.Shop = Shop
 
+
+--- StockedItem
+-- @table StockedItem
+-- @tfield string Item name
+-- @tfield int Count in stock, across all chests
+-- @tfield int Set price, -1 for not for sale
+-- @tfield int Count sold
+
+
+--- Chest
+-- @table Chest
+-- @tfield table pos Position
+-- @tfield string itemname Assigned item name, nil for unassigned
+-- @tfield int count Stored item count
+
+
+--- Constructor
+--
+-- @param obj A table to construct an object on top of
+-- @treturn company.Company
 function Shop:new(obj)
 	obj = obj or {}
 	setmetatable(obj, self)
@@ -14,6 +37,10 @@ function Shop:new(obj)
 	return obj
 end
 
+
+--- Export to Lua table
+--
+-- @treturn table
 function Shop:to_table()
 	return {
 		name   = self.name,
@@ -23,6 +50,11 @@ function Shop:to_table()
 	}
 end
 
+
+--- Import from Lua table
+--
+-- @tparam table tab
+-- @treturn bool true on success, false on failure
 function Shop:from_table(tab)
 	self.name   = tab.name
 	self.a_id   = tab.a_id
@@ -32,14 +64,26 @@ function Shop:from_table(tab)
 	return self.a_id ~= nil
 end
 
+
+--- Get table of items sold by this shop
+--
+-- @treturn table Keys are resolved item names, values are `StockedItem`.
 function Shop:get_items()
 	return self.items
 end
 
+
+--- Get `StockedItem` by item name
+--
+-- @treturn table
 function Shop:get_item(name)
 	return self.items[name]
 end
 
+
+--- Get stock item table by item name, or make it if it doesn't exist.
+--
+-- @treturn table
 function Shop:get_item_or_make(name)
 	local item = self.items[name] or {
 		name  = name,
@@ -52,21 +96,40 @@ function Shop:get_item_or_make(name)
 	return item
 end
 
+--- Add a chest to store stock in
+--
+-- @pos pos
+-- @treturn table chest table
 function Shop:add_chest(pos)
 	local posstr = minetest.pos_to_string(vector.floor(pos))
 	assert(not self.chests[posstr])
+
 	self.chests[posstr] = {
 		pos      = vector.new(pos),
 		itemname = nil,
 		count    = 0,
 	}
+	return self.chests[posstr]
 end
 
+
+--- Get a chest by pos
+--
+-- @pos pos
+-- @treturn table chest table
 function Shop:get_chest(pos)
 	local posstr = minetest.pos_to_string(vector.floor(pos))
 	return self.chests[posstr]
 end
 
+
+--- Get a list of chests which contain enough itmes to
+-- fulfill the requested name and count, or nil
+--
+-- @string name Item name
+-- @int count Number of items, >0
+-- @func filter func(chest_table)
+-- @treturn [table]|nil
 function Shop:get_chests_for_item(name, count, filter)
 	local ret = {}
 	for _, chest in pairs(self.chests) do
@@ -82,6 +145,13 @@ function Shop:get_chests_for_item(name, count, filter)
 	return nil
 end
 
+
+--- Reads chest inventory, and updates stock counts
+--
+-- This should be avoided, and the incremental methods used instead.
+--
+-- @pos pos
+-- @tparam InvRef inv
 function Shop:chest_poll(pos, inv)
 	local chest = self:get_chest(pos)
 	assert(chest)
@@ -115,6 +185,11 @@ function Shop:chest_poll(pos, inv)
 	end
 end
 
+
+--- An item has been added to a chest, make note of it
+--
+-- @pos pos
+-- @tparam ItemStack stack
 function Shop:chest_add_item(pos, stack)
 	local chest = self:get_chest(pos)
 	assert(chest)
@@ -126,6 +201,11 @@ function Shop:chest_add_item(pos, stack)
 	new.stock = new.stock + stack:get_count()
 end
 
+
+--- An item has been removed from a chest, make note of it
+--
+-- @pos pos
+-- @tparam ItemStack stack
 function Shop:chest_remove_item(pos, stack)
 	local chest = self:get_chest(pos)
 	assert(chest)
