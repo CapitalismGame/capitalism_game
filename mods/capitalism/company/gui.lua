@@ -16,13 +16,15 @@ company.show_company_select_dialog = lib_quickfs.register("company:set_company",
 		if #comps == 0 then
 			formspec = {
 				"size[4,5]",
-				"label[0,-0.1;You're not a member of any companies]",
+				"real_coordinates[true]",
+				"label[0.3,0.3;You're not a member of any companies]",
 			}
 		else
 			formspec = {
-				"size[4,5]",
-				"label[0,-0.1;Select a Company]",
-				"textlist[-0.1,0.5;4,4;companies;",
+				"size[5.5,6.75]",
+				"real_coordinates[true]",
+				"label[0.375,0.375;Select a Company]",
+				"textlist[0.375,0.75;4.75,4.75;companies;",
 				table.concat(_.map(comps, function(comp)
 					if comp:get_ceo_name() == pname then
 						return minetest.formspec_escape(comp.title)
@@ -31,8 +33,8 @@ company.show_company_select_dialog = lib_quickfs.register("company:set_company",
 					end
 				end), ","),
 				";1;false]",
-				"button[0,4.5;2,1;back;Back]",
-				"button[2,4.5;2,1;switch;Switch]",
+				"button[0.375,5.875;2.1875,0.5;back;Back]",
+				"button[2.9375,5.875;2.1875,0.5;switch;Switch]",
 			}
 		end
 
@@ -54,7 +56,7 @@ company.show_company_select_dialog = lib_quickfs.register("company:set_company",
 			local comp_name = context.comps[context.idx or 1]
 			company.set_active(name, comp_name)
 			ret(player)
-		elseif not (fields.quit ~= "" or fields.back) then
+		elseif fields.quit ~= "" or fields.back then
 			ret(player)
 			return
 		end
@@ -83,16 +85,18 @@ company.show_company_house = lib_quickfs.register("company:house", {
 		end
 
 		local fs = {
-			"size[6,5.1]",
-			company.get_company_header(pname, 6, 4.1),
-			"field[0.3,2.1;6,1;title;Title;", minetest.formspec_escape(data.title), "]",
-			"button[1,3.5;2,1;cancel;Cancel]",
-			"button[3,3.5;2,1;save;Save]",
+			"size[6,4.5]",
+			"real_coordinates[true]",
+			company.get_company_header(pname, 6, 3.5),
+			"field[0.375,1.8;5.25,0.5;title;Title;", minetest.formspec_escape(data.title), "]",
+			"button[0.625,2.675;2,0.5;cancel;Cancel]",
+			"button[3.375,2.675;2,0.5;save;Save]",
 		}
 
+		context.error = "incorrect thing"
 		if context.error then
-			fs[#fs + 1] = "box[-0.3,3.05;6.4,0.4;#f00]"
-			fs[#fs + 1] = "label[0,3;"
+			fs[#fs + 1] = "box[0,0;6,0.4;#f00]"
+			fs[#fs + 1] = "label[0.3,0.11;"
 			fs[#fs + 1] = minetest.formspec_escape(context.error)
 			fs[#fs + 1] = "]"
 
@@ -100,26 +104,23 @@ company.show_company_house = lib_quickfs.register("company:house", {
 		end
 
 		if context.is_new then
-			fs[#fs + 1] = "field[0.3,0.6;6,1;name;Name;"
+			fs[#fs + 1] = "field[0.375,0.375;5.25,0.5;name;Name;"
 			fs[#fs + 1] = minetest.formspec_escape(data.name)
 			fs[#fs + 1] = "]"
 		else
-			fs[#fs + 1] = "label[0,0;Name]"
-			fs[#fs + 1] = "label[0.05,0.5;"
+			fs[#fs + 1] = "label[0.6,0.5;Name]"
+			fs[#fs + 1] = "label[0.6,0.575;"
 			fs[#fs + 1] = minetest.formspec_escape(data.name)
 			fs[#fs + 1] = "]"
-			fs[#fs + 1] = "box[0,0.4;5.8,0.66;#111]"
+			fs[#fs + 1] = "box[0.375,0.375;5.25,1;#111]"
 		end
 
 		return table.concat(fs, "")
 	end,
 
 	on_receive_fields = function(context, player, fields, comp)
-		if fields.switch then
-			company.show_company_select_dialog(player:get_player_name(), function(player2)
-				local pname = player2:get_player_name()
-				company.show_company_house(pname, comp and company.get_active(pname))
-			end)
+		if fields.cancel then
+			sfinv.set_page_and_show(player, "company:company")
 			return false
 		end
 
@@ -153,17 +154,17 @@ function company.get_company_header(pname, width, y, snippet)
 	end
 
 	return table.concat({
-			"container[0,", tostring(y + 0.45), "]",
-			"box[-0.3,-0.1;", tostring(width + 0.4), ",1.1;#222]",
-			"label[0.1,0.0;",
+			"container[0,", tostring(y), "]",
+			"box[0,0;", tostring(width), ",1;#222]",
+			"label[0.375,0.33;",
 			minetest.formspec_escape(comp and comp.title or "No active company"),
 			"]",
-			"label[0.1,0.4;",
+			"label[0.375,0.66;",
 			snippet_text,
 			"]",
 			"button[",
-			tostring(width - 2),
-			",0;2,1;switch;Switch]",
+			tostring(width - 2.25),
+			",0.25;2,0.5;switch;Switch]",
 			"container_end[]",
 		}, "")
 end
@@ -176,7 +177,8 @@ sfinv.register_page("company:company", {
 
 		-- Using an array to build a formspec is considerably faster
 		local formspec = {
-			company.get_company_header(pname, 8, 7.6)
+			"real_coordinates[true]",
+			company.get_company_header(pname, 10.5, 9),
 		}
 
 		if comp then
@@ -184,21 +186,28 @@ sfinv.register_page("company:company", {
 			for _, panel in pairs(company.registered_panels) do
 				if not panel.show_to or panel:show_to(player, comp, context) then
 					formspec[#formspec + 1] = "container["
-					formspec[#formspec + 1] = tostring((i % 2) * 4)
+					formspec[#formspec + 1] = tostring((i % 2) * 5.0625 + 0.375)
 					formspec[#formspec + 1] = ","
-					formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2)
+					formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2.15625 + 0.375)
 					formspec[#formspec + 1] = ".3]"
 
-					formspec[#formspec + 1] = "label[1.5,-0.3;"
+					formspec[#formspec + 1] = "style[title_"
+					formspec[#formspec + 1] = panel.name
+					formspec[#formspec + 1] = ";border=false;bgimg=;bgimg_pressed=]"
+
+					formspec[#formspec + 1] = "button[0,0;4.6875,0.5;title_"
+					formspec[#formspec + 1] = panel.name
+					formspec[#formspec + 1] = ";"
 					formspec[#formspec + 1] = panel.title
 					formspec[#formspec + 1] = "]"
 
-					formspec[#formspec + 1] = "box[0,-0.3;3.8,1.8;"
+					formspec[#formspec + 1] = "box[0,0;4.6875,1.78125;"
 					formspec[#formspec + 1] = panel.bgcolor
 					formspec[#formspec + 1] = "]"
 
+					formspec[#formspec + 1] = "container[0.25,0.25]"
 					formspec[#formspec + 1] = panel:get(player, comp, context)
-					formspec[#formspec + 1] = "container_end[]"
+					formspec[#formspec + 1] = "container_end[]container_end[]"
 
 					i = i + 1
 				end
@@ -206,10 +215,10 @@ sfinv.register_page("company:company", {
 
 			while i < 2*4 do
 				formspec[#formspec + 1] = "box["
-				formspec[#formspec + 1] = tostring((i % 2) * 4)
+				formspec[#formspec + 1] = tostring((i % 2) * 5.0625 + 0.375)
 				formspec[#formspec + 1] = ","
-				formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2)
-				formspec[#formspec + 1] = ";3.8,1.8;#111]"
+				formspec[#formspec + 1] = tostring(math.floor(i / 2) * 2.15625 + 0.375)
+				formspec[#formspec + 1] = ";4.6875,1.78125;#111]"
 
 				i = i + 1
 			end
@@ -255,7 +264,7 @@ company.register_panel({
 	title = "Company House",
 	bgcolor = "#369",
 	get = function(_, _, _, _)
-		return "button[1,0.6;2,1;edit_details;Edit Details]"
+		return "button[1.05,0.75;2,0.5;edit_details;Edit Details]"
 	end,
 	on_player_receive_fields = function(player, context, fields)
 		if fields.edit_details then
@@ -278,7 +287,7 @@ company.register_panel({
 			memcount = memcount + 1
 		end
 
-		return "label[0.2,0.2;" .. memcount .. " members]"
+		return "label[0,0.3;" .. memcount .. " members]"
 	end,
 })
 

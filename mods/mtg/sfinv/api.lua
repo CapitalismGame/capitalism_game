@@ -36,15 +36,29 @@ function sfinv.get_nav_fs(player, context, nav, current_idx)
 	end
 end
 
+
+function sfinv.get_hotbar_bg(x, y, real_coordinates)
+	local out = ""
+	local spacing = real_coordinates and 0.25 or 0
+	for i=0,7,1 do
+		local ix = x + i + i*spacing
+		out = out .."image["..ix..","..y..";1,1;gui_hb_bg.png]"
+	end
+	return out
+end
+
+
 local theme_inv = [[
-		list[current_player;main;0,4.7;8,1;]
-		list[current_player;main;0,5.85;8,3;8]
-	]]
+		list[current_player;main;0.375,4.7;8,1;]
+		list[current_player;main;0.375,6.1;8,3;8]
+	]] .. sfinv.get_hotbar_bg(0.375, 4.7, true)
 
 function sfinv.make_formspec(player, context, content, show_inv, size)
 	local tmp = {
-		size or "size[8,8.6]",
+		size or "size[10.5,10]",
+		"real_coordinates[true]",
 		sfinv.get_nav_fs(player, context, context.nav_titles, context.nav_idx),
+		"real_coordinates[false]",
 		content
 	}
 	if show_inv then

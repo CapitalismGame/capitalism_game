@@ -358,6 +358,6 @@ company.register_panel({
 			text = text .. "\n" .. key .. ": " .. value
 		end
 
-		return "label[0.2,0.2;" .. minetest.formspec_escape(text) .. "]"
+		return "label[0,0.3;" .. minetest.formspec_escape(text) .. "]"
 	end,
 })

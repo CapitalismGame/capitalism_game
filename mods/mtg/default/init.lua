@@ -20,10 +20,14 @@ minetest.register_on_joinplayer(function(player)
 			listcolors[#00000069;#5A5A5A;#141318;#30434C;#FFF] ]])
 end)
 
-function default.get_hotbar_bg(x,y)
+function default.get_hotbar_bg(x, y, real_coordinates)
 	local out = ""
+	local spacing = real_coordinates and (5/4) or 0
+	local padding = real_coordinates and (3/8) or 0
+	local iy = y + (y + 1)*spacing + padding
 	for i=0,7,1 do
-		out = out .."image["..x+i..","..y..";1,1;gui_hb_bg.png]"
+		local ix = x + i + (x + i + 1)*spacing + padding
+		out = out .."image["..ix..","..y..";1,1;gui_hb_bg.png]"
 	end
 	return out
 end
