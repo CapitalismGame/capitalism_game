@@ -7,6 +7,9 @@ _G.audit = function()
 	return { post = function() end }
 end
 
+_G.vector = {}
+
+require("libs/lib_utils/vector")
 require("capitalism/land/api")
 
 _G.company = {}
@@ -152,5 +155,22 @@ describe("land", function()
 		suc = land.set_price(area, "testuser", 100)
 		assert.is_true(suc)
 		assert.equals(area.land_sale, 100)
+	end)
+
+	it("calc_value", function()
+		local function v(x, y, z)
+			return { x=x, y=y, z=z }
+		end
+
+		areas.areas = {
+			{ owner="c:government", id=1, name="Root", pos1=v(0,0,0), pos2=v(100,100,100), parent=nil },
+			{ owner="c:government", id=2, name="City", pos1=v(0,0,0), pos2=v(100,100,100), parent=1 },
+			{ owner="c:government", id=3, name="Commercial", land_type="commercial", pos1=v(10,10,10), pos2=v(50,50,50),
+						parent=2, land_value=1000000 },
+			{ owner="c:test", id=4, name="Mall", land_type="commercial",  pos1=v(10,10,10), pos2=v(30,30,30), parent=3 },
+			{ owner="c:test", id=5, name="Shop", land_type="commercial",  pos1=v(10,10,10), pos2=v(20,13,20), parent=4 },
+		}
+
+		assert.equals(land.calc_value(areas.areas[5]), 200*(10*10*3*0.33) + 1000000 * 1 / (52.25*0.1 + 2))
 	end)
 end)

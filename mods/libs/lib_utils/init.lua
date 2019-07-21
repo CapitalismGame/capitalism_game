@@ -57,3 +57,10 @@ function lib_utils.make_saveload(tab, storage, itemarraykey, registername, class
 		tab.dirty = false
 	end
 end
+
+function vector.sqdist(a, b)
+	local x = a.x - b.x
+	local y = a.y - b.y
+	local z = a.z - b.z
+	return x*x + y*y + z*z
+end

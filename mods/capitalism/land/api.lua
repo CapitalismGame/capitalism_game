@@ -136,6 +136,26 @@ function land.get_by_area_id(id)
 end
 
 
+--- Get zone for a plot
+--
+-- Gets the base zone for a particular area
+function land.get_zone(area)
+	assert(type(area) == "table")
+
+	local zone = area
+	while zone do
+		local next = areas.areas[zone.parent]
+		if next and next.land_type ~= area.land_type then
+			return zone
+		end
+
+		zone = next
+	end
+
+	return nil
+end
+
+
 --- Transfers a plot between two owners, after checking relevant permissions.
 --
 -- @int id
@@ -256,6 +276,33 @@ function land.set_price(area, pname, price)
 	area.land_sale = price
 	areas:save()
 	return true
+end
+
+
+--- Calculates a recommended value for the lot, based on the position and more.
+--
+-- @tparam table area
+-- @treturn number value
+function land.calc_value(area)
+	assert(type(area) == "table")
+
+	-- Calculate a weighted metric based on volume of area
+	local pos1, pos2 = vector.sort(area.pos1, area.pos2)
+	local size = vector.subtract(pos2, pos1)
+	local value = 200 * (size.x * size.z * 0.33 * size.y)
+
+	-- Find distance to zone center
+	local zone = land.get_zone(area)
+	if zone then
+		local zone_center = zone.spawn_point or zone.pos1
+		local area_center = vector.divide(vector.add(area.pos1, area.pos2), 2)
+		local dist = vector.sqdist(zone_center, area_center)
+
+		value = value + (zone.land_value or 1000000) * 1 / (dist*0.1 + 2)
+	end
+
+	area.land_value = value
+	return value
 end
 
 
