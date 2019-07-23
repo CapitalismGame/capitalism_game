@@ -306,6 +306,30 @@ function land.calc_value(area)
 end
 
 
+--- Gets plot value, calcs it if needed.
+--
+-- @tparam table area
+-- @treturn number value
+function land.get_value(area)
+	if area.land_value then
+		return area.land_value
+	else
+		return land.calc_value()
+	end
+end
+
+
+--- Work out the amount of tax that should be paid monthly
+--
+-- @tparam table area
+-- @treturn number value
+function land.get_tax(area)
+	local value = land.get_value(area)
+	local zone = land.get_zone(area)
+	return value * (zone.property_tax_rate or 0.1)
+end
+
+
 --- Whether a user can buy a plot
 --
 -- @tparam table area
