@@ -1,5 +1,13 @@
 lib_utils = {}
 
+function lib_utils.interval(time, func, ...)
+	local function tick(...)
+		func(...)
+		minetest.after(time, tick, ...)
+	end
+	minetest.after(time, tick, ...)
+end
+
 function lib_utils.make_saveload(tab, storage, itemarraykey, registername, class)
 	assert(tab)
 	assert(storage)
