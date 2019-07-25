@@ -314,7 +314,7 @@ function land.get_value(area)
 	if area.land_value then
 		return area.land_value
 	else
-		return land.calc_value()
+		return land.calc_value(area)
 	end
 end
 

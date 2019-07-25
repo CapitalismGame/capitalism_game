@@ -31,7 +31,7 @@ land.show_debug_to = lib_quickfs.register("land:debug", {
 	get = function(context, player)
 		local fs = {
 			"size[7,6]",
-			"tablecolumns[color;tree;text,width=10;text]",
+			"tablecolumns[color;tree;text,width=10;text;text,align=right]",
 			-- "tableoptions[background=#00000000;border=false]",
 			"table[0,0;4.8,6;list_areas;"
 		}
@@ -66,7 +66,8 @@ land.show_debug_to = lib_quickfs.register("land:debug", {
 
 			fs[#fs + 1] = area.level .. "," ..
 					minetest.formspec_escape(area.name .. " [id=" .. area.id .. "]") .. "," ..
-					minetest.formspec_escape(area.owner)
+					minetest.formspec_escape(area.owner) .. "," ..
+					(math.floor(land.get_value(area)*10)/10)
 		end
 
 		fs[#fs + 1] = ";"
@@ -76,15 +77,12 @@ land.show_debug_to = lib_quickfs.register("land:debug", {
 		fs[#fs + 1] = "]"
 
 		if context.selected then
-			-- local area = list[context.selected]
-			-- fs[#fs + 1] = "box[5,1;1.8,0.8;#222]"
 			fs[#fs + 1] = "button[5,0;2,1;to_comm;Commercial]"
 			fs[#fs + 1] = "button[5,1;2,1;to_inds;Industrial]"
 			fs[#fs + 1] = "button[5,2;2,1;to_resd;Residential]"
+			fs[#fs + 1] = "button[5,3;2,1;to_clear;Clear]"
 			fs[#fs + 1] = "button[5,4;2,1;set_owner;Set Owner]"
-			fs[#fs + 1] = "box[5,3;1.8,0.8;#222]"
 			fs[#fs + 1] = "button[5,5;2,1;delete;Delete]"
-
 		else
 			fs[#fs + 1] = "label[0.1,6.1;No area selected]"
 		end
@@ -122,6 +120,8 @@ land.show_debug_to = lib_quickfs.register("land:debug", {
 				return do_set("industrial")
 			elseif fields.to_resd then
 				return do_set("residential")
+			elseif fields.to_clear then
+				return do_set(nil)
 			elseif fields.unzone then
 				local area = context.list[context.selected]
 				land.remove_zone(area.id)
@@ -140,7 +140,7 @@ land.show_set_price_to = lib_quickfs.register("land:set_price", {
 		assert(area.owner and area.pos2)
 		local fs = {
 			"size[3,2]",
-			"field[0.3,0.5;3,1;price;Price;", tostring(area.land_sale), "]",
+			"field[0.3,0.5;3,1;price;Price;", tostring(area.land_sale or area.land_value or 100000), "]",
 			"button_exit[1,1.2;1,1;set;Set]"
 		}
 
@@ -150,7 +150,7 @@ land.show_set_price_to = lib_quickfs.register("land:set_price", {
 	on_receive_fields = function(context, player, fields, area)
 		if fields.set then
 			land.set_price(area, player:get_player_name(),
-					tonumber(fields.price) or 100000)
+					tonumber(fields.price) or area.land_value)
 		end
 	end,
 })
